@@ -1,50 +1,52 @@
-import { Flower, Image, PenBox, Search } from "lucide-react";
-
 import {
   Sidebar,
   SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+  SidebarFooter,
+  SidebarHeader,
+  SidebarRail,
+  SidebarSeparator,
+} from "@/components/ui/sidebar"
+import { NavUser } from "./nav-user"
+import AppSidebarHeader from "./sidebar-header"
+import SidebarOtherGPT from "./sidebar-other-gpts"
+import SidebarChats from "./sidebar-chats"
+import SidebarNewProject from "./sidebar-new-project"
+import SideBarMainItems from "./sidebar-main-items"
 
-// Menu items.
-const items = [
-  { title: "New Chat", url: "#", icon: PenBox },
-  { title: "Search Chat", url: "#", icon: Search },
-  { title: "Library", url: "#", icon: Image },
-];
+const data = {
+  user: {
+    email:"adilkadivala560@gmail.com",
+    name: "Adil Kadival",
+    subscription: "free",
+    avatar: "/avatars/shadcn.jpg",
+  },
+}
 
 export function AppSidebar() {
   return (
-    <Sidebar collapsible="icon" className="group relative">
-      <SidebarContent>
-        <SidebarGroup>
-          <div className="flex items-center justify-between mb-5 px-1.5">
-            <Flower className="group-data-[state=collapsed]:opacity-0" />
-            <SidebarTrigger className="text-muted-foreground transition-opacity duration-300 group-data-[state=collapsed]:opacity-0 group-data-[state=collapsed]:group-hover:opacity-100" />
-          </div>
+    <Sidebar collapsible="icon" className="group">
+      <SidebarHeader>
+        <AppSidebarHeader />
+      </SidebarHeader>
 
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+    
+      <div className="flex-shrink-0">
+        <SideBarMainItems />
+      </div>
+
+   
+      <SidebarContent className="flex-1 overflow-y-auto overflow-x-hidden">
+        <SidebarSeparator />
+        <SidebarOtherGPT />
+        <SidebarNewProject />
+        <SidebarChats />
       </SidebarContent>
+
+ 
+      <SidebarFooter>
+        <NavUser user={data.user} />
+      </SidebarFooter>
+      <SidebarRail />
     </Sidebar>
-  );
+  )
 }
