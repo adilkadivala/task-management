@@ -14,7 +14,7 @@ const TaskSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["Todo", "In Progress", "Completed"],
+      enum: ["Todo", "Progress", "Completed"],
       default: "Todo",
     },
     dueDate: { type: Date },

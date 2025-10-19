@@ -1,10 +1,37 @@
 import express, { Router } from "express";
-import { createTask, viewTasks, updateTasks } from "../controller/tasks";
+import {
+  createTask,
+  viewTasks,
+  updateTask,
+  deleteTask,
+  filterTask,
+  SearchTask,
+} from "../controller/tasks";
 import { authMiddleware } from "../middleware/auth";
 const taskRouter: Router = express.Router();
 
+// create
 taskRouter.route("/api/v1/create-task").post(authMiddleware, createTask);
+
+// get
 taskRouter.route("/api/v1/view-task").get(authMiddleware, viewTasks);
-taskRouter.route("/api/v1/update-task").put(authMiddleware, updateTasks);
+
+// update
+taskRouter.route("/api/v1/update-task/:taskId").put(authMiddleware, updateTask);
+
+// delete
+taskRouter
+  .route("/api/v1/delete-task/:taskId")
+  .delete(authMiddleware, deleteTask);
+
+// filter
+taskRouter
+  .route("/api/v1/filter-task/:filterby")
+  .get(authMiddleware, filterTask);
+
+// search
+taskRouter
+  .route("/api/v1/search-task/:searchby")
+  .get(authMiddleware, SearchTask);
 
 export default taskRouter;
