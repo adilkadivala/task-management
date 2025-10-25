@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import intro from "@/assets/task-intro.mp4";
 
 const Hero = () => {
   return (
@@ -43,29 +44,10 @@ const Hero = () => {
               </div>
             </div>
           </div>
-          <div className="relative hidden lg:block">
+          <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent rounded-2xl blur-3xl" />
             <div className="relative bg-card border border-border rounded-2xl p-8 space-y-4">
-              <div className="space-y-3">
-                <div className="h-3 bg-muted rounded w-3/4" />
-                <div className="h-3 bg-muted rounded w-1/2" />
-              </div>
-              <div className="space-y-2">
-                <div className="flex gap-2">
-                  <div className="w-8 h-8 bg-primary/20 rounded" />
-                  <div className="flex-1 space-y-1">
-                    <div className="h-2 bg-muted rounded w-2/3" />
-                    <div className="h-2 bg-muted rounded w-1/2" />
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <div className="w-8 h-8 bg-primary/20 rounded" />
-                  <div className="flex-1 space-y-1">
-                    <div className="h-2 bg-muted rounded w-2/3" />
-                    <div className="h-2 bg-muted rounded w-1/2" />
-                  </div>
-                </div>
-              </div>
+              <video src={intro} autoPlay playsInline loop></video>
             </div>
           </div>
         </div>

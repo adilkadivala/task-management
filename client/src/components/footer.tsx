@@ -2,6 +2,9 @@ import { CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
+  const date = new Date();
+  const newDate = date.getFullYear();
+
   return (
     <footer className="border-t border-border py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -21,19 +24,22 @@ const Footer = () => {
             <h4 className="font-semibold mb-4">Product</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <Link to="#" className="hover:text-foreground transition">
+                <a
+                  href="#features"
+                  className="hover:text-foreground transition"
+                >
                   Features
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="#" className="hover:text-foreground transition">
+                <a href="#pricing" className="hover:text-foreground transition">
                   Pricing
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="#" className="hover:text-foreground transition">
+                <a href="#" className="hover:text-foreground transition">
                   Security
-                </Link>
+                </a>
               </li>
             </ul>
           </div>
@@ -48,11 +54,6 @@ const Footer = () => {
               <li>
                 <Link to="#" className="hover:text-foreground transition">
                   Blog
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="hover:text-foreground transition">
-                  Careers
                 </Link>
               </li>
             </ul>
@@ -79,14 +80,18 @@ const Footer = () => {
           </div>
         </div>
         <div className="border-t border-border pt-8 flex flex-col sm:flex-row justify-between items-center text-sm text-muted-foreground">
-          <p>&copy; 2025 TaskFlow. All rights reserved.</p>
+          <p>&copy; {newDate} TaskFlow. All rights reserved.</p>
           <div className="flex gap-6 mt-4 sm:mt-0">
             <Link to="#" className="hover:text-foreground transition">
               Twitter
             </Link>
-            <Link to="#" className="hover:text-foreground transition">
+            <a
+              href="https://www.github.com/adilkadivala"
+              target="_blank"
+              className="hover:text-foreground transition"
+            >
               GitHub
-            </Link>
+            </a>
             <Link to="#" className="hover:text-foreground transition">
               LinkedIn
             </Link>

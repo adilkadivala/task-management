@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
-import { Github } from "lucide-react";
 
 export function SingUp({ className, ...props }: React.ComponentProps<"form">) {
   return (
@@ -22,8 +21,12 @@ export function SingUp({ className, ...props }: React.ComponentProps<"form">) {
           </p>
         </div>
         <Field>
+          <FieldLabel htmlFor="name">Name</FieldLabel>
+          <Input id="name" type="text" placeholder="john" required />
+        </Field>
+        <Field>
           <FieldLabel htmlFor="email">Email</FieldLabel>
-          <Input id="email" type="email" placeholder="m@example.com" required />
+          <Input id="email" type="text" placeholder="m@example.com" required />
         </Field>
         <Field>
           <div className="flex items-center">
@@ -42,9 +45,15 @@ export function SingUp({ className, ...props }: React.ComponentProps<"form">) {
         </Field>
         <FieldSeparator>Or continue with</FieldSeparator>
         <Field>
-          <Button variant="outline" size="icon">
-            <Github />
-          </Button>
+          <div className="flex items-center justify-center gap-1 w-full">
+            <Button className="w-1/2" variant="outline" size="icon">
+              Google
+            </Button>
+            <Button className="w-1/2" variant="outline" size="icon">
+              Github
+            </Button>
+          </div>
+
           <FieldDescription className="text-center">
             Already have an account?{" "}
             <Link to={"/auth/sign-in"} className="underline underline-offset-4">

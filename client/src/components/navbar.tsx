@@ -6,24 +6,23 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 w-full bg-background/80 backdrop-blur-md border-b border-border z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <CheckCircle2 className="w-5 h-5 text-primary-foreground" />
+        <Link to="/">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <CheckCircle2 className="w-5 h-5 text-primary-foreground" />
+            </div>
+            <span className="text-xl font-bold">TaskFlow</span>
           </div>
-          <span className="text-xl font-bold">TaskFlow</span>
-        </div>
+        </Link>
         <div className="hidden md:flex items-center gap-8">
-          <Link
-            to="#features"
-            className="text-sm hover:text-primary transition"
-          >
+          <a href="#features" className="text-sm hover:text-primary transition">
             Features
-          </Link>
-          <Link to="#pricing" className="text-sm hover:text-primary transition">
+          </a>
+          <Link to="/pricing" className="text-sm hover:text-primary transition">
             Pricing
           </Link>
-          <Link to="#" className="text-sm hover:text-primary transition">
-            Docs
+          <Link to="/about" className="text-sm hover:text-primary transition">
+            About
           </Link>
         </div>
         <div className="flex items-center gap-3">

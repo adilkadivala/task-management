@@ -9,12 +9,8 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
-import { Github } from "lucide-react";
 
-export function SingIn({
-  className,
-  ...props
-}: React.ComponentProps<"form">) {
+export function SingIn({ className, ...props }: React.ComponentProps<"form">) {
   return (
     <form className={cn("flex flex-col gap-6", className)} {...props}>
       <FieldGroup>
@@ -45,9 +41,14 @@ export function SingIn({
         </Field>
         <FieldSeparator>Or continue with</FieldSeparator>
         <Field>
-          <Button variant="outline" size="icon-sm">
-            <Github />
-          </Button>
+          <div className="flex items-center justify-center gap-1 w-full">
+            <Button className="w-1/2" variant="outline" size="icon">
+              Google
+            </Button>
+            <Button className="w-1/2" variant="outline" size="icon">
+              Github
+            </Button>
+          </div>
           <FieldDescription className="text-center">
             Don&apos;t have an account?{" "}
             <Link to={"/auth/sign-up"} className="underline underline-offset-4">

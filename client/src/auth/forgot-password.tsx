@@ -15,17 +15,15 @@ const ForgotPassword = () => {
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-xs">
+          <div className="w-full max-w-sm">
             <ForgotPasswordForm />
           </div>
         </div>
       </div>
-      <div className="bg-muted relative hidden lg:block">
-        <img
-          src="/placeholder.svg"
-          alt="Image"
-          className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-        />
+      <div className="bg-muted bg-linear-to-tl from-primary to-primary/30 relative hidden lg:flex items-center justify-center">
+        <div className="text-primary-foreground size-96 flex items-center justify-center rounded-md">
+          <CheckCircle2 className="size-1/2" />
+        </div>
       </div>
     </div>
   );

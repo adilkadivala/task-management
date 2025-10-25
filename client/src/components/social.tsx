@@ -3,15 +3,13 @@ const Social = () => {
     <section className="py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <p className="text-sm text-muted-foreground font-medium mb-4">
-            TRUSTED BY LEADING TEAMS
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-center">
-            {["Stripe", "Vercel", "Figma", "Notion"].map((company) => (
-              <div key={company} className="text-center">
-                <p className="font-semibold text-foreground/60">{company}</p>
-              </div>
-            ))}
+          <div className="text-center mb-16 space-y-4">
+            <h4 className="text-2xl sm:text-3xl font-bold text-balance">
+              TRUSTED BY LEADING TEAMS
+            </h4>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Powerful features designed to help teams work smarter, not harder
+            </p>
           </div>
         </div>
         <div className="grid md:grid-cols-3 gap-8 mt-16">
