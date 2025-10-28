@@ -129,19 +129,19 @@ const chartConfig = {
   },
   completed: {
     label: "Completed",
-    color: "var(--primary)",
+    color: "var(--color-chart-1)",
   },
   progress: {
     label: "Progress",
-    color: "#3B9797",
+    color: "var(--color-chart-2)",
   },
   todo: {
     label: "Todo",
-    color: "#6EACDA",
+    color: "var(--color-chart-3)",
   },
 } satisfies ChartConfig;
 
-export function ChartAreaInteractive() {
+export function TasksByStatus() {
   const isMobile = useIsMobile();
   const [timeRange, setTimeRange] = React.useState("90d");
 
