@@ -38,12 +38,12 @@ const data = {
     },
     {
       title: "Task",
-      url: "/task-management",
+      url: "/dashboard/task-management",
       icon: IconListDetails,
     },
     {
       title: "Calender",
-      url: "/calender",
+      url: "/dashboard/calender",
       icon: IconCalendar,
     },
   ],

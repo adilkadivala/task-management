@@ -1,16 +1,21 @@
-import { User } from "../models/user";
+import {
+  fogotPasswordSchema,
+  signInSchema,
+  signUpSchema,
+  updatePasswordSchema,
+  User,
+  verifyOtpSchema,
+} from "../models/user";
 import { NextFunction, Request, Response } from "express";
 import zod from "zod";
 import jwt from "jsonwebtoken";
 import incrypt from "bcryptjs";
+import { check, generate } from "../services/otp";
+import { sendOtpMail } from "../services/mail";
+import { Otp } from "../models/otp";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
-
-const signUpSchema = zod.object({
-  name: zod.string().optional(),
-  email: zod.email(),
-  password: zod.string(),
-});
+const BCRYPT_SALT = process.env.BCRYPT_SALT!;
 
 // signUp
 
@@ -23,8 +28,9 @@ const signUp = async (
     const { name, email, password } = req.body;
 
     const { success } = signUpSchema.safeParse(req.body);
+
     if (!success) {
-      return res.json({
+      return res.status(422).json({
         message: "Incorrect input",
       });
     }
@@ -34,14 +40,14 @@ const signUp = async (
     });
 
     if (user?._id) {
-      return res.json({
+      return res.status(401).json({
         message: "User Already exist,",
       });
     }
 
-    const hashPass = await incrypt.hash(password, 5);
+    const hashPass = await incrypt.hash(password, Number(BCRYPT_SALT));
 
-  await User.create({
+    await User.create({
       name,
       email,
       password: hashPass,
@@ -62,9 +68,9 @@ const signIn = async (
   try {
     const { email, password } = req.body;
 
-    const { success } = signUpSchema.safeParse(req.body);
+    const { success } = signInSchema.safeParse(req.body);
     if (!success) {
-      return res.json({
+      return res.status(422).json({
         message: "Incorrect input",
       });
     }
@@ -74,7 +80,7 @@ const signIn = async (
     });
 
     if (!isUserExist) {
-      return res.status(403).json({ message: "User doesn't exist" });
+      return res.status(401).json({ message: "User doesn't exist" });
     }
 
     const verifyPass = await incrypt.compare(password, isUserExist.password);
@@ -84,12 +90,132 @@ const signIn = async (
       return res
         .status(200)
         .json({ message: "logged in successfully!!", token });
+    }
+    return res.status(403).json({ message: "credentials not matched" });
+  } catch (error: any) {
+    return next(error);
+  }
+};
+
+// forgot password
+const forgotPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | void> => {
+  try {
+    const { email } = req.body;
+
+    console.log(email);
+
+    const { success } = fogotPasswordSchema.safeParse(req.body);
+    if (!success) {
+      return res.status(422).json({
+        message: "Incorrect input",
+      });
+    }
+
+    const isUserExist = await User.findOne({
+      email,
+    });
+
+    if (!isUserExist) {
+      return res.status(401).json({ message: "User doesn't exist" });
+    }
+
+    const otp = await generate(email);
+    console.log(otp);
+    if (!otp) {
+      return res.status(401).json({ message: "otp not generated" });
+    }
+    await sendOtpMail(email, otp);
+    return res
+      .status(200)
+      .json({ message: "Otp for reset password sent to user email:" });
+  } catch (error: any) {
+    return next(error);
+  }
+};
+
+// verify-otp
+const verifyOtp = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | void> => {
+  try {
+    const { otp, email } = req.body;
+    const { success } = verifyOtpSchema.safeParse(req.body);
+    if (!success) {
+      return res.status(422).json({
+        message: "Incorrect input",
+      });
+    }
+
+    const checkOtp = await check(otp, email);
+    if (checkOtp.status === 400) {
+      return res.status(400).json({ message: checkOtp.message });
+    } else if (checkOtp.status === 410) {
+      return res.status(410).json({ message: checkOtp.message });
     } else {
-      return res.status(403).json({ message: "credentials not matched" });
+      return res.status(200).json({ message: checkOtp.message });
     }
   } catch (error: any) {
     return next(error);
   }
 };
 
-export { signUp, signIn };
+// update-password
+const updatePassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | void> => {
+  try {
+    const { email, password } = req.body;
+    const { success } = updatePasswordSchema.safeParse(req.body);
+    if (!success) {
+      return res.status(422).json({
+        message: "Incorrect input",
+      });
+    }
+    // check opt status
+    const findOtp = await Otp.findOne({ email });
+    const isVerified = findOtp?.isVerified;
+
+    if (isVerified !== true) {
+      return res.status(400).json({ message: "Otp not varified!!" });
+    }
+
+    const hashPass = await incrypt.hash(password, Number(BCRYPT_SALT));
+
+    await User.updateOne({ email }, { password: hashPass });
+    return res.status(200).json({ message: "password updated successfully!!" });
+  } catch (error: any) {
+    return next(error);
+  }
+};
+
+// about-me
+const about_me = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | void> => {
+  try {
+    const { userId } = req.params;
+
+    const isUserExist = await User.findOne({
+      _id: userId,
+    });
+
+    if (!isUserExist) {
+      return res.status(401).json({ message: "User doesn't exist" });
+    }
+    return res.status(200).json({ message: "user profile", isUserExist });
+  } catch (error: any) {
+    return next(error);
+  }
+};
+
+export { signUp, signIn, forgotPassword, verifyOtp, updatePassword, about_me };

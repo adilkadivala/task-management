@@ -11,7 +11,7 @@ createRoot(document.getElementById("root")!).render(
     <BrowserRouter>
       <ThemeProvider defaultTheme="system" storageKey="task-management-theme">
         <App />
-        <Toaster />
+        <Toaster theme="system" richColors />
       </ThemeProvider>
     </BrowserRouter>
   </StrictMode>

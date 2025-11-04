@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn, server_api, type UserData } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -8,11 +8,71 @@ import {
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
+import axios from "axios";
+import { toast } from "sonner";
+
+// env.  variable
+
+
 
 export function SingUp({ className, ...props }: React.ComponentProps<"form">) {
+  const [userData, setUserData] = useState<UserData>({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [userStatus, setUserStatus] = useState<string | null>(null);
+
+  const navigate = useNavigate();
+
+  // form submittion
+
+  const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      setIsLoading(true);
+      const response = await axios.post(`${server_api}/auth/api/v1/sign-up`, {
+        ...userData,
+      });
+
+      if (response.status === 200) {
+        toast.success(response.data.message);
+        setUserData({
+          name: "",
+          email: "",
+          password: "",
+        });
+      }
+    } catch (error: any) {
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+
+      if (status === 401) {
+        toast.error(message);
+        setUserStatus(message);
+      } else if (status === 422) {
+        setError("Required");
+      }
+    } finally {
+      setTimeout(() => {
+        setError(null);
+        setUserStatus(null);
+      }, 1000);
+      setIsLoading(false);
+    }
+  };
   return (
-    <form className={cn("flex flex-col gap-6", className)} {...props}>
+    <form
+      className={cn("flex flex-col gap-6", className)}
+      {...props}
+      onSubmit={handleForm}
+    >
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
           <h1 className="text-2xl font-bold">Create account to manage Tasks</h1>
@@ -20,15 +80,47 @@ export function SingUp({ className, ...props }: React.ComponentProps<"form">) {
             Enter your email below to login to your account
           </p>
         </div>
-        <Field>
+        <Field className="relative">
           <FieldLabel htmlFor="name">Name</FieldLabel>
-          <Input id="name" type="text" placeholder="john" required />
+          {error && (
+            <span className="text-lg text-rose-600 absolute left-12">*</span>
+          )}
+          <Input
+            id="name"
+            name="name"
+            className={`${error && "border border-rose-300"}`}
+            type="text"
+            placeholder="john"
+            value={userData.name}
+            onChange={(e) => {
+              setUserData({ ...userData, name: e.target.value });
+            }}
+          />
         </Field>
-        <Field>
+        <Field className="relative">
           <FieldLabel htmlFor="email">Email</FieldLabel>
-          <Input id="email" type="text" placeholder="m@example.com" required />
+          {error && (
+            <span className="text-lg text-rose-600 absolute left-12">*</span>
+          )}
+
+          <Input
+            id="email"
+            name="email"
+            className={`${error || (userStatus && "border border-rose-300")}`}
+            type="text"
+            placeholder="john@gmail.com"
+            value={userData.email}
+            onChange={(e) => {
+              setUserData({ ...userData, email: e.target.value });
+            }}
+          />
+          {userStatus && (
+            <span className="text-sm text-rose-600 absolute left-12">
+              {userStatus}
+            </span>
+          )}
         </Field>
-        <Field>
+        <Field className="relative">
           <div className="flex items-center">
             <FieldLabel htmlFor="password">Password</FieldLabel>
             <Link
@@ -38,10 +130,25 @@ export function SingUp({ className, ...props }: React.ComponentProps<"form">) {
               Forgot your password?
             </Link>
           </div>
-          <Input id="password" type="password" required />
+          {error && (
+            <span className="text-lg text-rose-600 absolute left-17">*</span>
+          )}
+          <Input
+            id="password"
+            name="password"
+            className={`${error && "border border-rose-300"}`}
+            type="text"
+            placeholder="john@1234"
+            value={userData.password}
+            onChange={(e) => {
+              setUserData({ ...userData, password: e.target.value });
+            }}
+          />
         </Field>
         <Field>
-          <Button type="submit">Login</Button>
+          <Button type="submit">
+            {isLoading ? <Spinner className="animate-spin" /> : "Sign Up"}
+          </Button>
         </Field>
         <FieldSeparator>Or continue with</FieldSeparator>
         <Field>

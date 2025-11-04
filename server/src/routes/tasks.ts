@@ -10,6 +10,22 @@ import {
 import { authMiddleware } from "../middleware/auth";
 const taskRouter: Router = express.Router();
 
+
+
+// /api/v1/task
+//   ├── create-task          [POST]
+//   ├── get-all-task         [GET]
+//   ├── update-task/:id      [PUT]
+//   ├── delete-task/:id      [DELETE]
+//   ├── search-by-title/:query [GET]
+//   ├── filter-by-status/:status [GET]
+//   ├── filter-by-priority/:priority [GET]
+//   ├── assign/:taskId       [POST]
+//   ├── unassign/:taskId/:userId [DELETE]
+//   ├── stats                [GET]
+//   ├── recent               [GET]
+//   ├── activity/:taskId     [GET]
+
 // create
 taskRouter.route("/api/v1/create-task").post(authMiddleware, createTask);
 
