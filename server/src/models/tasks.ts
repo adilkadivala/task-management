@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
-
 const { Schema } = mongoose;
-const ObjectId = Schema.ObjectId
+const ObjectId = Schema.ObjectId;
 
 const TaskSchema = new Schema(
   {
@@ -20,7 +19,9 @@ const TaskSchema = new Schema(
     dueDate: { type: Date },
     userId: { type: ObjectId, ref: "User", required: true },
   },
-  { timestamps: true } 
+  { timestamps: true }
 );
+
+TaskSchema.index({ title: 1, userId: 1 }, { unique: true });
 
 export const Task = mongoose.model("Task", TaskSchema);

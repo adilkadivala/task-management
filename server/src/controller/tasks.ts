@@ -1,20 +1,8 @@
 import { Task } from "../models/tasks";
+import { taskSchema, updateTaskSchema } from "../models/validator/tasks";
 import { NextFunction, Request, Response } from "express";
-import zod from "zod";
-
-const taskSchema = zod.object({
-  title: zod.string().optional(),
-  description: zod.string(),
-  priority: zod.enum(["Low", "Medium", "High"]),
-  status: zod.enum(["Todo", "Progress", "Completed"]),
-  dueDate: zod.string().transform((val) => new Date(val)),
-});
-
-export const updateTaskSchema = taskSchema.partial();
-type updateTaskSchema = zod.infer<typeof updateTaskSchema>;
 
 // create
-
 const createTask = async (
   req: Request,
   res: Response,
@@ -26,19 +14,12 @@ const createTask = async (
     const userId = req.userId;
     const { success } = taskSchema.safeParse(req.body);
     if (!success) {
-      return res.json({
+      return res.status(422).json({
         message: "Incorrect input",
       });
     }
-    const task = await Task.findOne({
-      title,
-    });
-    if (task?._id) {
-      return res.json({
-        message: "This titled Task Already exist,",
-      });
-    }
-    await Task.create({
+
+    const newTask = await Task.create({
       title,
       description,
       priority,
@@ -46,34 +27,42 @@ const createTask = async (
       dueDate,
       userId,
     });
-    return res.status(200).json({ message: "task created successfully" });
+    return res
+      .status(200)
+      .json({ message: "task created successfully", data: newTask });
   } catch (error: any) {
+    if (error.code === 11000) {
+      return res.status(409).json({
+        success: true,
+        message: "task with this title already exists for this user",
+      });
+    }
     return next(error);
   }
 };
 
 // view
-
 const viewTasks = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void | Response> => {
   try {
-    const tasks = await Task.find();
-    if (tasks.length > 0) {
-      return res.status(200).json(tasks);
+    // @ts-ignore
+    const userId = req.userId;
+    const tasks = await Task.find({ userId }).lean();
+    if (!tasks.length) {
+      return res
+        .status(403)
+        .json({ message: "no any task availabke to display" });
     }
-    return res
-      .status(403)
-      .json({ message: "no any task availabke to display" });
+    return res.status(200).json({ message: "Your tasks", tasks });
   } catch (error: any) {
     return next(error);
   }
 };
 
 // update
-
 const updateTask = async (
   req: Request,
   res: Response,
@@ -81,38 +70,44 @@ const updateTask = async (
 ): Promise<void | Response> => {
   try {
     const body = req.body;
-    console.log(body);
     const { taskId } = req.params;
 
     if (!taskId) {
-      return res.status(401).json({ message: "params not provided" });
+      return res.status(400).json({ message: "params not provided" });
+    }
+
+    const task = await Task.findById(taskId);
+    if (!task) {
+      return res.status(404).json({
+        message: "task not found,",
+      });
+    }
+    // @ts-ignore
+    if (task.userId.toString() !== req.userId) {
+      return res
+        .status(403)
+        .json({ message: "Not authorized to update this task" });
     }
 
     const { success } = updateTaskSchema.safeParse(req.body);
     if (!success) {
-      return res.json({
+      return res.status(422).json({
         message: "Incorrect input",
       });
     }
-    const task = await Task.findOne({
-      _id: taskId,
+    const updatedTask = await Task.findByIdAndUpdate(taskId, body, {
+      new: true,
     });
-    if (!task?._id) {
-      return res.status(401).json({
-        message: "task not found,",
-      });
-    }
 
-    await Task.updateOne({ _id: taskId }, body);
-
-    return res.status(200).json({ message: "task updated successfully" });
+    return res
+      .status(200)
+      .json({ message: "task updated successfully", data: updatedTask });
   } catch (error: any) {
     return next(error);
   }
 };
 
 // delete
-
 const deleteTask = async (
   req: Request,
   res: Response,
@@ -122,20 +117,27 @@ const deleteTask = async (
     const { taskId } = req.params;
 
     if (!taskId) {
-      return res.status(401).json({ message: "params not provided" });
+      return res.status(404).json({ message: "params not provided" });
     }
 
-    const task = await Task.findOne({
+    const task = await Task.findById({
       _id: taskId,
     });
 
-    if (!task?._id) {
-      return res.status(401).json({
+    if (!task) {
+      return res.status(404).json({
         message: "task not found,",
       });
     }
 
-    await Task.deleteOne({ _id: taskId });
+    // @ts-ignore
+    if (task.userId.toString() !== req.userId) {
+      return res
+        .status(403)
+        .json({ message: "Not authorized to delete this task" });
+    }
+
+    await Task.findByIdAndDelete(taskId);
 
     return res.status(200).json({ message: "task deleted successfully" });
   } catch (error: any) {
@@ -147,10 +149,18 @@ const deleteTask = async (
 const filterTask = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { status, priority } = req.query;
+    // @ts-ignore
+    const userId = req.userId;
+    const filter: Record<string, any> = { userId };
 
-    const filter: Record<string, any> = {};
-    if (status) filter.status = status;
-    if (priority) filter.priority = priority;
+    if (status) filter.status = new RegExp(status.toString(), "i");
+    if (priority) filter.priority = new RegExp(priority.toString(), "i");
+
+    if (typeof status !== "string" && typeof priority !== "string") {
+      return res.status(400).json({
+        message: "Invalid query parameters. Use ?status=Todo or ?priority=High",
+      });
+    }
 
     if (!status && !priority) {
       return res
@@ -158,7 +168,7 @@ const filterTask = async (req: Request, res: Response, next: NextFunction) => {
         .json({ message: "Please provide status or priority to filter" });
     }
 
-    const tasks = await Task.find(filter);
+    const tasks = await Task.find(filter).sort({ updatedAt: -1 });
 
     if (!tasks.length) {
       return res.status(404).json({ message: "No tasks found" });
@@ -178,10 +188,19 @@ const filterTask = async (req: Request, res: Response, next: NextFunction) => {
 const SearchTask = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { title, description } = req.query;
+    // @ts-ignore
+    const userId = req.userId;
+    const search: Record<string, any> = { userId };
+    if (title) search.title = new RegExp(title.toString(), "i");
+    if (description)
+      search.description = new RegExp(description.toString(), "i");
 
-    const search: Record<string, any> = {};
-    if (title) search.title = title;
-    if (description) search.description = description;
+    if (typeof title !== "string" && typeof description !== "string") {
+      return res.status(400).json({
+        message:
+          "Invalid query parameters. Use ?title=Go to Gym or ?description= Gym",
+      });
+    }
 
     if (!title && !description) {
       return res

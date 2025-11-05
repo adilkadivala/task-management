@@ -24,7 +24,7 @@ export const check = async (otp: string, email: string) => {
   });
 
   if (!otpRecord) {
-    return { message: "User doesn't exist" };
+    return {status: 401, message: "User doesn't exist" };
   }
   const compareOtp = await incrypt.compare(otp, otpRecord.otp!);
   if (!compareOtp) return { status: 400, message: "Incorrect OTP" };

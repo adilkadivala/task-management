@@ -1,13 +1,12 @@
+import { User } from "../models/user";
 import {
   fogotPasswordSchema,
   signInSchema,
   signUpSchema,
   updatePasswordSchema,
-  User,
   verifyOtpSchema,
-} from "../models/user";
+} from "../models/validator/user";
 import { NextFunction, Request, Response } from "express";
-import zod from "zod";
 import jwt from "jsonwebtoken";
 import incrypt from "bcryptjs";
 import { check, generate } from "../services/otp";
@@ -155,6 +154,8 @@ const verifyOtp = async (
     const checkOtp = await check(otp, email);
     if (checkOtp.status === 400) {
       return res.status(400).json({ message: checkOtp.message });
+    } else if (checkOtp.status === 401) {
+      return res.status(401).json({ message: checkOtp.message });
     } else if (checkOtp.status === 410) {
       return res.status(410).json({ message: checkOtp.message });
     } else {
@@ -205,9 +206,12 @@ const about_me = async (
   try {
     const { userId } = req.params;
 
-    const isUserExist = await User.findOne({
-      _id: userId,
-    });
+    const isUserExist = await User.findOne(
+      {
+        _id: userId,
+      },
+      { name: true, email: true, role: true }
+    );
 
     if (!isUserExist) {
       return res.status(401).json({ message: "User doesn't exist" });
