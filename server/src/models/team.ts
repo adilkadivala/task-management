@@ -18,7 +18,6 @@ const teamSchema = new Schema(
       {
         type: ObjectId,
         ref: "User",
-        required: true,
       },
     ],
     createdBy: {

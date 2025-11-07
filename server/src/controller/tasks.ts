@@ -50,7 +50,7 @@ const viewTasks = async (
   try {
     // @ts-ignore
     const userId = req.userId;
-    const tasks = await Task.find({ userId }).lean();
+    const tasks = await Task.find({ userId });
     if (!tasks.length) {
       return res
         .status(403)

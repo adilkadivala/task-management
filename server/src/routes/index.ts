@@ -1,9 +1,12 @@
 import express, { Router } from "express";
 import authRouter from "./auth";
 import taskRouter from "./tasks";
-const router:Router = express.Router()
+import teamRouter from "./team";
 
-router.use("/auth", authRouter)
-router.use("/task", taskRouter)
+const router: Router = express.Router();
 
-export default router
+router.use("/auth", authRouter);
+router.use("/task", taskRouter);
+router.use("/team", teamRouter);
+
+export default router;
