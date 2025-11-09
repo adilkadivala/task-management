@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 const { Schema } = mongoose;
-const ObjectId = Schema.ObjectId;
+const ObjectId = Schema.Types.ObjectId;
 
 const TaskSchema = new Schema(
   {

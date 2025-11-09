@@ -1,3 +1,4 @@
+import { Activity } from "../models/activity";
 import { Task } from "../models/tasks";
 import { Team } from "../models/team";
 import { taskSchema, updateTaskSchema } from "../models/validator/tasks";
@@ -29,6 +30,15 @@ const createTask = async (
       dueDate,
       userId,
     });
+
+    // create activity
+    await Activity.create({
+      taskId: newTask._id,
+      userId,
+      action: "CREATED",
+      details: `Task "${title}" was created`,
+    });
+
     return res
       .status(200)
       .json({ message: "task created successfully", data: newTask });
@@ -117,10 +127,18 @@ const updateTask = async (
         message: "Incorrect input",
       });
     }
+
     const updatedTask = await Task.findByIdAndUpdate(taskId, body, {
       new: true,
     });
 
+    // create activity
+    await Activity.create({
+      taskId,
+      userId: task.userId,
+      action: "UPDATED",
+      details: `Task "${task.title}" was updated`,
+    });
     return res
       .status(200)
       .json({ message: "task updated successfully", data: updatedTask });
@@ -160,6 +178,13 @@ const deleteTask = async (
     }
 
     await Task.findByIdAndDelete(taskId);
+
+    await Activity.create({
+      taskId,
+      userId: task.userId,
+      action: "DELETED",
+      details: `Task "${task.title}" was deleted`,
+    });
 
     return res.status(200).json({ message: "task deleted successfully" });
   } catch (error: any) {
@@ -546,6 +571,13 @@ const assignTask = async (
 
     await Team.findByIdAndUpdate(teamId, { $addToSet: { tasks: taskId } });
 
+    await Activity.create({
+      taskId,
+      userId,
+      action: "ASSIGNED",
+      details: `Task assigned to user ${memberId}`,
+    });
+
     return res.status(200).json({
       message: "Task assigned successfully",
       assignedTo: assignee,
@@ -634,17 +666,9 @@ const taskStats = async (
     // @ts-ignore
     const userId = req.userId;
 
-    console.log(userId);
-    console.log(teamId);
-
     const filterStats = teamId
       ? { teamId: new mongoose.Types.ObjectId(teamId as string) }
       : { userId };
-
-    console.log("User making request:", userId);
-    console.log("Filter applied:", filterStats);
-    const teamTasks = await Task.find(filterStats, "title teamId userId");
-    console.log("Matched tasks:", teamTasks);
 
     const totalTasks = await Task.countDocuments(filterStats);
 
@@ -702,6 +726,70 @@ const taskStats = async (
   }
 };
 
+// task recents
+const taskRecents = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | void> => {
+  try {
+    const { teamId } = req.query;
+    // @ts-ignore
+    const userId = req.userId;
+
+    const filter = teamId
+      ? { teamId: new mongoose.Types.ObjectId(teamId as string) }
+      : { userId };
+
+    const recentTasks = await Task.find(filter)
+      .sort({ updatedAt: -1 })
+      .limit(5)
+      .populate("assignedTo", "name email")
+      .populate("teamId", "name");
+
+    if (!recentTasks.length) {
+      return res
+        .status(404)
+        .json({ message: "no any recents task available to display stats" });
+    }
+
+    return res.status(200).json({
+      message: "recently task data",
+      total: recentTasks.length,
+      recentTasks,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getActivity = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | void> => {
+  try {
+    const { taskId } = req.params;
+
+    const activityLogs = await Activity.find({ taskId })
+      .sort({ createdAt: -1 })
+      .populate("userId", "name email");
+
+    if (!activityLogs.length) {
+      return res
+        .status(404)
+        .json({ message: "No activity found for this task" });
+    }
+
+    return res.status(200).json({
+      message: "Activity history for this task",
+      activity: activityLogs,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   createTask,
   getTasks,
@@ -718,4 +806,6 @@ export {
   assignTask,
   unassignTask,
   taskStats,
+  taskRecents,
+  getActivity,
 };

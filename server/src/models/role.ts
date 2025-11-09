@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const { Schema } = mongoose;
-const ObjectId = mongoose.Types.ObjectId;
+const ObjectId = Schema.Types.ObjectId;
 
 const roleSchema = new Schema(
   {
