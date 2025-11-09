@@ -1,7 +1,7 @@
 import express, { Router } from "express";
 import {
   createTask,
-  viewTasks,
+  getTasks,
   updateTask,
   deleteTask,
   filterTask,
@@ -12,43 +12,56 @@ import {
   updateTaskOfTeam,
   getTasksOfTeam,
   getSpecificTaskOfTeam,
+  getSpecificTask,
+  deleteTaskOfTeam,
+  taskStats,
 } from "../controller/tasks";
 import { authMiddleware } from "../middleware/auth";
 import { requireAdmin } from "../middleware/role";
 const taskRouter: Router = express.Router();
 
 // /api/v1/task
-//   ├── create/team/task       [POST]  // done
+//   ├── create/solo/task       [POST]  // done
+//   ├── update/solo/taskId       [PUT]  // done
+//   ├── delete/solo/taskId      [DELETE]  // done
+//   ├── get/solo/taska       [GET]  // done
+//   ├── get/solo/specific-task/taskId       [GET]  // done
+//   ├── cerate/team/task      [PUT] // done
 //   ├── update/team/taskId       [PUT] // done
 //   ├── fetch/team/taskId  // perticuler   [GET] // done
 //   ├── fetch/team/tasks  //all       [GET]  // done
-//   ├── delete/team/taskId       [DELETE] 
+//   ├── delete/team/taskId       [DELETE]   //done
 //   ├── assign/:taskId       [POST]         // done
 //   ├── unassign/:taskId/:userId [DELETE] // done
 //   ├── stats                [GET]
 //   ├── recent               [GET]
 //   ├── activity/:taskId     [GET]
 
-// create
+// create a task
 taskRouter.route("/api/v1/create-task").post(authMiddleware, createTask);
 
-// get
-taskRouter.route("/api/v1/view-task").get(authMiddleware, viewTasks);
+// get all tasks
+taskRouter.route("/api/v1/get-all-task").get(authMiddleware, getTasks);
 
-// update
+// get specific tasks
+taskRouter
+  .route("/api/v1/get-specific-task/:taskId")
+  .get(authMiddleware, getSpecificTask);
+
+// update task
 taskRouter.route("/api/v1/update-task/:taskId").put(authMiddleware, updateTask);
 
-// delete
+// delete task
 taskRouter
   .route("/api/v1/delete-task/:taskId")
   .delete(authMiddleware, deleteTask);
 
-// filter
+// filter task
 taskRouter
   .route("/api/v1/filter-task/:filterby")
   .get(authMiddleware, filterTask);
 
-// search
+// search task
 taskRouter
   .route("/api/v1/search-task/:searchby")
   .get(authMiddleware, searchTask);
@@ -73,13 +86,21 @@ taskRouter
   .route("/api/v1/update-task-of-team/:teamId/:taskId")
   .put(authMiddleware, requireAdmin, updateTaskOfTeam);
 
+// delete a task of team
+taskRouter
+  .route("/api/v1/delete-task-of-team/:teamId/:taskId")
+  .delete(authMiddleware, requireAdmin, deleteTaskOfTeam);
+
 // assign a task
 taskRouter
   .route("/api/v1/assign-task/:teamId/:taskId/:memberId")
   .post(authMiddleware, requireAdmin, assignTask);
-// assign a task
+// un-assign a task
 taskRouter
   .route("/api/v1/unassign-task/:teamId/:taskId/:memberId")
   .delete(authMiddleware, requireAdmin, unassignTask);
+
+// task stats
+taskRouter.route("/api/v1/task-stats").get(authMiddleware, taskStats);
 
 export default taskRouter;

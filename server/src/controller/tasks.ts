@@ -1,8 +1,8 @@
-import { safeParse } from "zod";
 import { Task } from "../models/tasks";
 import { Team } from "../models/team";
 import { taskSchema, updateTaskSchema } from "../models/validator/tasks";
 import { NextFunction, Request, Response } from "express";
+import mongoose from "mongoose";
 
 // create
 const createTask = async (
@@ -43,8 +43,8 @@ const createTask = async (
   }
 };
 
-// view
-const viewTasks = async (
+// get all tasks of a user
+const getTasks = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -52,13 +52,33 @@ const viewTasks = async (
   try {
     // @ts-ignore
     const userId = req.userId;
-    const tasks = await Task.find({ userId });
-    if (!tasks.length) {
+    const tasks = await Task.findOne({ userId });
+    if (!tasks) {
       return res
         .status(403)
         .json({ message: "no any task availabke to display" });
     }
     return res.status(200).json({ message: "Your tasks", tasks });
+  } catch (error: any) {
+    return next(error);
+  }
+};
+
+// get a specific task of a user
+const getSpecificTask = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | void> => {
+  try {
+    const { taskId } = req.params;
+    // @ts-ignore
+    const userId = req.userId;
+    const task = await Task.findOne({ _id: taskId, userId });
+    if (!task) {
+      return res.status(403).json({ message: "no task availabke to display" });
+    }
+    return res.status(200).json({ message: "Your tasks", task });
   } catch (error: any) {
     return next(error);
   }
@@ -420,6 +440,48 @@ const updateTaskOfTeam = async (
   }
 };
 
+// delete a task of team
+const deleteTaskOfTeam = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | void> => {
+  try {
+    const { teamId, taskId } = req.params;
+    const body = req.body;
+
+    // @ts-ignore
+    const userId = req.userId;
+
+    if (!userId) {
+      return res.status(401).json({ message: "account not found" });
+    }
+
+    // checking team
+    const isTeamExist = await Team.findById(teamId);
+
+    if (!isTeamExist) {
+      return res.status(404).json({ message: "team not found" });
+    }
+
+    // check the task is exist in a team or not
+    const isTaskInTeam = await Team.findOne({ _id: teamId, tasks: taskId });
+    if (!isTaskInTeam) {
+      return res.status(403).json({ message: "task not found in the team" });
+    }
+
+    // delete a task of team
+    await Task.findByIdAndDelete(taskId);
+    await Team.findByIdAndUpdate(teamId, { $pull: { tasks: taskId } });
+
+    return res.status(200).json({
+      message: "Task deleted successfully for team",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // assign a task
 const assignTask = async (
   req: Request,
@@ -561,9 +623,89 @@ const unassignTask = async (
   }
 };
 
+// task stats
+const taskStats = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | void> => {
+  try {
+    const { teamId } = req.query;
+    // @ts-ignore
+    const userId = req.userId;
+
+    console.log(userId);
+    console.log(teamId);
+
+    const filterStats = teamId
+      ? { teamId: new mongoose.Types.ObjectId(teamId as string) }
+      : { userId };
+
+    console.log("User making request:", userId);
+    console.log("Filter applied:", filterStats);
+    const teamTasks = await Task.find(filterStats, "title teamId userId");
+    console.log("Matched tasks:", teamTasks);
+
+    const totalTasks = await Task.countDocuments(filterStats);
+
+    if (totalTasks === 0) {
+      return res
+        .status(404)
+        .json({ message: "no any task available to display stats" });
+    }
+    const completedTasks = await Task.countDocuments({
+      ...filterStats,
+      status: "Completed",
+    });
+    const todoTasks = await Task.countDocuments({
+      ...filterStats,
+      status: "Todo",
+    });
+    const inProgressTasks = await Task.countDocuments({
+      ...filterStats,
+      status: "Progress",
+    });
+    const lowPriorityTasks = await Task.countDocuments({
+      ...filterStats,
+      priority: "Low",
+    });
+    const mediumPriorityTasks = await Task.countDocuments({
+      ...filterStats,
+      priority: "Medium",
+    });
+    const highPriorityTasks = await Task.countDocuments({
+      ...filterStats,
+      priority: "High",
+    });
+
+    // completion rate
+    const completionRate =
+      totalTasks > 0 ? ((completedTasks / totalTasks) * 100).toFixed(2) : 0;
+
+    const stats = {
+      "total tasks": totalTasks,
+      "completed tasks": completedTasks,
+      "todo tasks": todoTasks,
+      "in progress tasks": inProgressTasks,
+      "low prority tasks": lowPriorityTasks,
+      "midium priority tasks": mediumPriorityTasks,
+      "high priority tasks": highPriorityTasks,
+      "task completion rate": completionRate,
+    };
+
+    return res.status(200).json({
+      message: "your stats here",
+      stats,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   createTask,
-  viewTasks,
+  getTasks,
+  getSpecificTask,
   updateTask,
   deleteTask,
   filterTask,
@@ -572,6 +714,8 @@ export {
   getTasksOfTeam,
   getSpecificTaskOfTeam,
   updateTaskOfTeam,
+  deleteTaskOfTeam,
   assignTask,
   unassignTask,
+  taskStats,
 };
