@@ -8,15 +8,13 @@ import {
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import axios from "axios";
 import { toast } from "sonner";
 
 // env.  variable
-
-
 
 export function SingUp({ className, ...props }: React.ComponentProps<"form">) {
   const [userData, setUserData] = useState<UserData>({
@@ -29,7 +27,7 @@ export function SingUp({ className, ...props }: React.ComponentProps<"form">) {
   const [error, setError] = useState<string | null>(null);
   const [userStatus, setUserStatus] = useState<string | null>(null);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   // form submittion
 

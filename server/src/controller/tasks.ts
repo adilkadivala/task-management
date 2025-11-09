@@ -1,4 +1,6 @@
+import { safeParse } from "zod";
 import { Task } from "../models/tasks";
+import { Team } from "../models/team";
 import { taskSchema, updateTaskSchema } from "../models/validator/tasks";
 import { NextFunction, Request, Response } from "express";
 
@@ -46,7 +48,7 @@ const viewTasks = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<void | Response> => {
+): Promise<Response | void> => {
   try {
     // @ts-ignore
     const userId = req.userId;
@@ -67,7 +69,7 @@ const updateTask = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<void | Response> => {
+): Promise<Response | void> => {
   try {
     const body = req.body;
     const { taskId } = req.params;
@@ -112,7 +114,7 @@ const deleteTask = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<void | Response> => {
+): Promise<Response | void> => {
   try {
     const { taskId } = req.params;
 
@@ -146,7 +148,11 @@ const deleteTask = async (
 };
 
 // filter
-const filterTask = async (req: Request, res: Response, next: NextFunction) => {
+const filterTask = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | void> => {
   try {
     const { status, priority } = req.query;
     // @ts-ignore
@@ -185,7 +191,11 @@ const filterTask = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 // search
-const SearchTask = async (req: Request, res: Response, next: NextFunction) => {
+const searchTask = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | void> => {
   try {
     const { title, description } = req.query;
     // @ts-ignore
@@ -224,11 +234,344 @@ const SearchTask = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+// create a task of team
+const createTaskOfTeam = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | void> => {
+  try {
+    const { teamId } = req.params;
+    const { title, description, priority, status, dueDate } = req.body;
+
+    // @ts-ignore
+    const userId = req.userId;
+
+    if (!userId) {
+      return res.status(401).json({ message: "account not found" });
+    }
+
+    // checking team
+    const isTeamExist = await Team.findById(teamId);
+
+    if (!isTeamExist) {
+      return res.status(400).json({ message: "team not found" });
+    }
+
+    const { success } = taskSchema.safeParse(req.body);
+    if (!success) {
+      return res.status(422).json({ message: "Invalid task input" });
+    }
+
+    const newTask = await Task.create({
+      title,
+      description,
+      priority,
+      status,
+      dueDate,
+      teamId,
+      userId,
+    });
+
+    await Team.findByIdAndUpdate(teamId, {
+      $addToSet: { tasks: newTask._id },
+    });
+
+    return res.status(200).json({
+      message: "Task created successfully for team",
+      data: newTask,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get all task of team
+const getTasksOfTeam = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | void> => {
+  try {
+    const { teamId } = req.params;
+
+    // @ts-ignore
+    const userId = req.userId;
+
+    if (!userId) {
+      return res.status(401).json({ message: "account not found" });
+    }
+
+    // checking team
+    const isTeamExist = await Team.findById(teamId);
+
+    if (!isTeamExist) {
+      return res.status(404).json({ message: "team not found" });
+    }
+
+    // check the task is exist in a team or not
+    const getAllTasks = await Team.findOne({ _id: teamId }).populate({
+      path: "tasks",
+      select: "title description status priority assignedTo",
+      populate: { path: "assignedTo", select: "name email" },
+    });
+    if (!getAllTasks?.tasks.length) {
+      return res.status(403).json({ message: "no tasks available i the team" });
+    }
+
+    return res.status(200).json({
+      message: "all tasks of the team",
+      data: getAllTasks.tasks,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get a specific task of team
+const getSpecificTaskOfTeam = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | void> => {
+  try {
+    const { teamId, taskId } = req.params;
+
+    // @ts-ignore
+    const userId = req.userId;
+
+    if (!userId) {
+      return res.status(401).json({ message: "account not found" });
+    }
+
+    // checking team
+    const isTeamExist = await Team.findById(teamId);
+
+    if (!isTeamExist) {
+      return res.status(404).json({ message: "team not found" });
+    }
+
+    // check the task is exist in a team or not
+    const getSpecificTask = await Task.findOne({
+      _id: taskId,
+      teamId,
+    }).populate("assignedTo", "name email");
+
+    if (!getSpecificTask) {
+      return res
+        .status(403)
+        .json({ message: "no tasks available in the team" });
+    }
+
+    return res.status(200).json({
+      message: "here is your specific task",
+      task: getSpecificTask,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// update a task of team
+const updateTaskOfTeam = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | void> => {
+  try {
+    const { teamId, taskId } = req.params;
+    const body = req.body;
+
+    // @ts-ignore
+    const userId = req.userId;
+
+    if (!userId) {
+      return res.status(401).json({ message: "account not found" });
+    }
+
+    // checking team
+    const isTeamExist = await Team.findById(teamId);
+
+    if (!isTeamExist) {
+      return res.status(400).json({ message: "team not found" });
+    }
+
+    const { success } = updateTaskSchema.safeParse(req.body);
+    if (!success) {
+      return res.status(422).json({ message: "Invalid task input" });
+    }
+
+    // check the task is exist in a team or not
+    const isTaskExist = await Team.findOne({ _id: teamId, tasks: taskId });
+    if (!isTaskExist) {
+      return res.status(403).json({ message: "task not found in the team" });
+    }
+
+    const updateTask = await Task.findByIdAndUpdate(taskId, body, {
+      new: true,
+    });
+
+    return res.status(200).json({
+      message: "Task updated successfully for team",
+      data: updateTask,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// assign a task
+const assignTask = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | void> => {
+  try {
+    const { taskId, teamId, memberId } = req.params;
+    // @ts-ignore
+    const userId = req.userId;
+
+    if (!userId) {
+      return res.status(401).json({ message: "account not found" });
+    }
+
+    // checking a task
+    const isTaskExist = await Task.findById(taskId);
+
+    if (!isTaskExist) {
+      return res.status(400).json({ message: "task not found" });
+    }
+    if (isTaskExist.status === "Completed") {
+      return res.status(409).json({ message: "task already completed !!" });
+    }
+
+    // checking team
+    const isTeamExist = await Team.findById(teamId);
+
+    if (!isTeamExist) {
+      return res.status(400).json({ message: "team not found" });
+    }
+
+    const isTaskInTeam = isTeamExist.tasks.some((t) => t.toString() === taskId);
+    if (!isTaskInTeam) {
+      return res.status(409).json({ message: "Task not found in this team" });
+    }
+
+    if (isTaskExist.assignedTo?._id.toString() === memberId) {
+      return res.status(409).json({
+        message: "Task already assigned to this member",
+        assignee: isTaskExist,
+      });
+    }
+
+    // checking member
+    const isTeamMemberInTeam = isTeamExist.members.some(
+      (m) => m.toString() === memberId
+    );
+    if (!isTeamMemberInTeam) {
+      return res.status(404).json({ message: "Member not exists in the team" });
+    }
+
+    const assignee = await Task.findByIdAndUpdate(
+      taskId,
+      {
+        assignedTo: memberId,
+        teamId,
+        status: "Progress",
+      },
+      { new: true }
+    ).populate("assignedTo", "name email");
+
+    await Team.findByIdAndUpdate(teamId, { $addToSet: { tasks: taskId } });
+
+    return res.status(200).json({
+      message: "Task assigned successfully",
+      assignedTo: assignee,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// assign a task
+const unassignTask = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | void> => {
+  try {
+    const { taskId, teamId, memberId } = req.params;
+    // @ts-ignore
+    const userId = req.userId;
+
+    if (!userId) {
+      return res.status(401).json({ message: "account not found" });
+    }
+
+    // checking a task
+    const isTaskExist = await Task.findById(taskId);
+
+    if (!isTaskExist) {
+      return res.status(400).json({ message: "task not found" });
+    }
+    if (isTaskExist.status === "Completed") {
+      return res.status(409).json({ message: "task already completed !!" });
+    }
+    if (isTaskExist.status === "Todo") {
+      return res
+        .status(409)
+        .json({ message: "task not Assigned to anyone !!" });
+    }
+
+    // checking team
+    const isTeamExist = await Team.findById(teamId);
+
+    if (!isTeamExist) {
+      return res.status(400).json({ message: "team not found" });
+    }
+
+    const isTaskInTeam = isTeamExist.tasks.some((t) => t.toString() === taskId);
+    if (!isTaskInTeam) {
+      return res.status(409).json({ message: "Task not found in this team" });
+    }
+
+    // checking member
+    const isTeamMemberInTeam = isTeamExist.members.some(
+      (m) => m.toString() === memberId
+    );
+    if (!isTeamMemberInTeam) {
+      return res.status(404).json({ message: "Member not exits in the team" });
+    }
+
+    const unAssigned = await Task.findByIdAndUpdate(
+      taskId,
+      {
+        assignedTo: null,
+        status: "Todo",
+      },
+      { new: true }
+    ).populate("assignedTo", "name email");
+
+    return res.status(200).json({
+      message: "Task unassigned successfully",
+      task: unAssigned,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   createTask,
   viewTasks,
   updateTask,
   deleteTask,
   filterTask,
-  SearchTask,
+  searchTask,
+  createTaskOfTeam,
+  getTasksOfTeam,
+  getSpecificTaskOfTeam,
+  updateTaskOfTeam,
+  assignTask,
+  unassignTask,
 };

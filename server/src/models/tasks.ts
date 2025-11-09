@@ -16,6 +16,8 @@ const TaskSchema = new Schema(
       enum: ["Todo", "Progress", "Completed"],
       default: "Todo",
     },
+    assignedTo: { type: ObjectId, ref: "User" },
+    teamId: { type: ObjectId, ref: "Team" },
     dueDate: { type: Date },
     userId: { type: ObjectId, ref: "User", required: true },
   },

@@ -1,9 +1,3 @@
-// /api/v1/team
-//   ├── create               [POST]
-//   ├── add-member           [POST]
-//   ├── members/:teamId      [GET]
-//   ├── remove-member/:userId [DELETE]
-
 import express, { Router } from "express";
 import {
   addMember,
@@ -16,6 +10,7 @@ import {
 } from "../controller/team";
 import { authMiddleware } from "../middleware/auth";
 import { requireAdmin } from "../middleware/role";
+
 
 const teamRouter: Router = express.Router();
 // create
@@ -32,12 +27,10 @@ teamRouter
 teamRouter
   .route("/api/v1/add-member/:teamId/:memberId")
   .post(authMiddleware, requireAdmin, addMember);
-
 // get member
 teamRouter
   .route("/api/v1/get-members/:teamId")
   .get(authMiddleware, requireAdmin, getMembers);
-
 // remove member
 teamRouter
   .route("/api/v1/remove-member/:teamId/:memberId")

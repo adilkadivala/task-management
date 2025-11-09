@@ -5,14 +5,26 @@ import {
   updateTask,
   deleteTask,
   filterTask,
-  SearchTask,
+  searchTask,
+  assignTask,
+  unassignTask,
+  createTaskOfTeam,
+  updateTaskOfTeam,
+  getTasksOfTeam,
+  getSpecificTaskOfTeam,
 } from "../controller/tasks";
 import { authMiddleware } from "../middleware/auth";
+import { requireAdmin } from "../middleware/role";
 const taskRouter: Router = express.Router();
 
 // /api/v1/task
-//   ├── assign/:taskId       [POST]
-//   ├── unassign/:taskId/:userId [DELETE]
+//   ├── create/team/task       [POST]  // done
+//   ├── update/team/taskId       [PUT] // done
+//   ├── fetch/team/taskId  // perticuler   [GET] // done
+//   ├── fetch/team/tasks  //all       [GET]  // done
+//   ├── delete/team/taskId       [DELETE] 
+//   ├── assign/:taskId       [POST]         // done
+//   ├── unassign/:taskId/:userId [DELETE] // done
 //   ├── stats                [GET]
 //   ├── recent               [GET]
 //   ├── activity/:taskId     [GET]
@@ -39,6 +51,35 @@ taskRouter
 // search
 taskRouter
   .route("/api/v1/search-task/:searchby")
-  .get(authMiddleware, SearchTask);
+  .get(authMiddleware, searchTask);
+
+// create a task of team
+taskRouter
+  .route("/api/v1/create-task-of-team/:teamId")
+  .post(authMiddleware, requireAdmin, createTaskOfTeam);
+
+// get all tasks
+taskRouter
+  .route("/api/v1/get-all-task-of-team/:teamId")
+  .get(authMiddleware, requireAdmin, getTasksOfTeam);
+
+// get a specific task
+taskRouter
+  .route("/api/v1/get-specific-task-of-team/:teamId/:taskId")
+  .get(authMiddleware, requireAdmin, getSpecificTaskOfTeam);
+
+// update a task of team
+taskRouter
+  .route("/api/v1/update-task-of-team/:teamId/:taskId")
+  .put(authMiddleware, requireAdmin, updateTaskOfTeam);
+
+// assign a task
+taskRouter
+  .route("/api/v1/assign-task/:teamId/:taskId/:memberId")
+  .post(authMiddleware, requireAdmin, assignTask);
+// assign a task
+taskRouter
+  .route("/api/v1/unassign-task/:teamId/:taskId/:memberId")
+  .delete(authMiddleware, requireAdmin, unassignTask);
 
 export default taskRouter;
