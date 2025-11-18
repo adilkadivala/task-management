@@ -197,29 +197,4 @@ const updatePassword = async (
   }
 };
 
-// about-me
-const about_me = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<Response | void> => {
-  try {
-    const { userId } = req.params;
-
-    const isUserExist = await User.findOne(
-      {
-        _id: userId,
-      },
-      { name: true, email: true, role: true }
-    );
-
-    if (!isUserExist) {
-      return res.status(401).json({ message: "User doesn't exist" });
-    }
-    return res.status(200).json({ message: "user profile", isUserExist });
-  } catch (error: any) {
-    return next(error);
-  }
-};
-
-export { signUp, signIn, forgotPassword, verifyOtp, updatePassword, about_me };
+export { signUp, signIn, forgotPassword, verifyOtp, updatePassword };

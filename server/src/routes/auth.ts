@@ -1,6 +1,5 @@
 import express, { Router } from "express";
 import {
-  about_me,
   forgotPassword,
   signIn,
   signUp,
@@ -21,6 +20,5 @@ authRouter.route("/api/v1/verify-otp").post(verifyOtp);
 // reset-password
 authRouter.route("/api/v1/reset-password").post(updatePassword);
 // about-me
-authRouter.route("/api/v1/about-me/:userId").get(authMiddleware, about_me);
 
 export default authRouter;
