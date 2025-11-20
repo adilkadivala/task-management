@@ -1,24 +1,35 @@
 import { NextFunction, Request, Response } from "express";
-import { User } from "../models/user";
+import { Role } from "../models/role";
 
-const requireAdmin = async (
+export const requireAdmin = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void | Response> => {
   try {
+    const { teamId } = req.params;
     // @ts-ignore
-    const user = await User.findById(req.userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    const userId = req.userId;
 
-    if (user.role !== "admin") {
+    if (!teamId) {
+      return res.status(400).json({ message: "teamId not provided" });
+    }
+
+    const role = await Role.findOne({ userId, teamId });
+
+    if (!role) {
+      return res
+        .status(403)
+        .json({ message: "No role found for this user in this team" });
+    }
+
+    if (role.role !== "admin") {
       return res.status(403).json({ message: "Admin access required" });
     }
+
     next();
   } catch (error) {
     console.error("Role check error:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-
-export { requireAdmin };

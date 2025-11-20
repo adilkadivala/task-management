@@ -17,7 +17,6 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 const BCRYPT_SALT = process.env.BCRYPT_SALT!;
 
 // signUp
-
 const signUp = async (
   req: Request,
   res: Response,

@@ -5,6 +5,7 @@ import express from "express";
 import { connectDB } from "./config/db";
 import cors from "cors";
 import router from "./routes";
+import { initCommentWS } from "./ws/comments.ws";
 
 const SERVER_PORT = process.env.server_port;
 
@@ -16,6 +17,7 @@ app.use(router);
 connectDB
   .then(() => {
     console.log("database connected successfully");
+    initCommentWS();
     app.listen(SERVER_PORT, () => {
       console.log(`server is running at http://localhost:${SERVER_PORT}`);
     });

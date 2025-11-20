@@ -42,9 +42,6 @@ const createTeam = async (
       tasks: tasks || [],
     });
 
-    // updating a role
-    await User.findByIdAndUpdate(userId, { role: "admin" }, { new: true });
-
     // creating a role
     try {
       await Role.create({ userId, teamId: team._id, role: "admin" });

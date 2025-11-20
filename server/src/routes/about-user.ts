@@ -15,7 +15,7 @@ aboutUserRouter.route("/api/v1/about-me").get(authMiddleware, about_me);
 
 // about specific user (admin)
 aboutUserRouter
-  .route("/api/v1/about-user/:userId")
+  .route("/api/v1/about-user/:teamId/:userId")
   .get(authMiddleware, requireAdmin, about_user);
 
 // assigned me tasks
