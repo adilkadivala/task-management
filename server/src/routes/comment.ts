@@ -3,9 +3,9 @@
 //   ├── :taskId              [POST]  // done
 //   ├── :taskId/:commentId   [DELETE]  // done
 
-// 🔥 WS: join_task
-// 🔥 WS: send_comment
-// 🔥 WS: receive_comment
+// 🔥 WS: join_task   // DONE
+// 🔥 WS: send_comment    // DONE
+// 🔥 WS: receive_comment    // DONE
 
 import express, { Router } from "express";
 import {

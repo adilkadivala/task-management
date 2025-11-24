@@ -42,9 +42,16 @@ const createTeam = async (
       tasks: tasks || [],
     });
 
+    await team.save();
+
     // creating a role
     try {
-      await Role.create({ userId, teamId: team._id, role: "admin" });
+      const role = await Role.create({
+        userId,
+        teamId: team._id,
+        role: "admin",
+      });
+      await role.save();
     } catch (roleError) {
       console.error("Role creation failed:", roleError);
     }
@@ -59,8 +66,8 @@ const createTeam = async (
   }
 };
 
-// get
-const getTeams = async (
+// get  all teams
+const getAllTeams = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -94,6 +101,49 @@ const getTeams = async (
         .json({ message: "no any teams available to desplay" });
     }
     return res.status(200).json({ message: "Your teams", teams });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+
+// get  a specific team
+const getSpecificTeam = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void | Response> => {
+  try {
+    // @ts-ignore
+    const userId = req.userId;
+    const { teamId } = req.params;
+
+    if (!userId) {
+      return res.status(401).json({ message: "account not found" });
+    }
+
+    const team = await Team.findOne(
+      { _id: teamId },
+      { createdBy: userId },
+      {
+        name: true,
+        description: true,
+        members: true,
+        createdBy: true,
+        tasks: true,
+      }
+    )
+      .populate("createdBy", "name email")
+      .populate("members", "name email");
+
+    //   lean will help to convert response i plain js object from mongoose documents
+
+    if (!team) {
+      return res
+        .status(403)
+        .json({ message: "no such team available to desplay" });
+    }
+    return res.status(200).json({ message: "Your team", team });
   } catch (error) {
     return next(error);
   }
@@ -314,7 +364,8 @@ const removeMember = async (
 
 export {
   createTeam,
-  getTeams,
+  getAllTeams,
+  getSpecificTeam,
   updateTeam,
   deleteTeam,
   addMember,

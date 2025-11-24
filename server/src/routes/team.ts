@@ -4,19 +4,23 @@ import {
   createTeam,
   deleteTeam,
   getMembers,
-  getTeams,
+  getAllTeams,
   removeMember,
   updateTeam,
+  getSpecificTeam,
 } from "../controller/team";
 import { authMiddleware } from "../middleware/auth";
 import { requireAdmin } from "../middleware/role";
 
-
 const teamRouter: Router = express.Router();
 // create
 teamRouter.route("/api/v1/create-team").post(authMiddleware, createTeam);
-// read
-teamRouter.route("/api/v1/list-team").get(authMiddleware, getTeams);
+// read all
+teamRouter.route("/api/v1/list-team").get(authMiddleware, getAllTeams);
+// read specific team
+teamRouter
+  .route("/api/v1/list-team/:teamId")
+  .get(authMiddleware, getSpecificTeam);
 // update
 teamRouter.route("/api/v1/update-team/:teamId").put(authMiddleware, updateTeam);
 // delete
