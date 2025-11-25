@@ -1,12 +1,3 @@
-// /api/v1/comment
-//   ├── :taskId              [GET]  // done
-//   ├── :taskId              [POST]  // done
-//   ├── :taskId/:commentId   [DELETE]  // done
-
-// 🔥 WS: join_task   // DONE
-// 🔥 WS: send_comment    // DONE
-// 🔥 WS: receive_comment    // DONE
-
 import express, { Router } from "express";
 import {
   createComment,
