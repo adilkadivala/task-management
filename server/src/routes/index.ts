@@ -4,6 +4,7 @@ import taskRouter from "./tasks";
 import teamRouter from "./team";
 import aboutUserRouter from "./about-user";
 import commentRouter from "./comment";
+import notificationRouter from "./notifications";
 
 const router: Router = express.Router();
 
@@ -12,5 +13,6 @@ router.use("/task", taskRouter);
 router.use("/team", teamRouter);
 router.use("/about_user", aboutUserRouter);
 router.use("/comment", commentRouter);
+router.use("/notification", notificationRouter);
 
 export default router;

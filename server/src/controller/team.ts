@@ -106,7 +106,6 @@ const getAllTeams = async (
   }
 };
 
-
 // get  a specific team
 const getSpecificTeam = async (
   req: Request,
@@ -122,19 +121,11 @@ const getSpecificTeam = async (
       return res.status(401).json({ message: "account not found" });
     }
 
-    const team = await Team.findOne(
-      { _id: teamId },
-      { createdBy: userId },
-      {
-        name: true,
-        description: true,
-        members: true,
-        createdBy: true,
-        tasks: true,
-      }
-    )
+    const team = await Team.findById(teamId)
+      .select("name description members createdBy tasks")
       .populate("createdBy", "name email")
-      .populate("members", "name email");
+      .populate("members", "name email")
+      .lean();
 
     //   lean will help to convert response i plain js object from mongoose documents
 

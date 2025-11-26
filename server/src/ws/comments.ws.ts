@@ -4,6 +4,7 @@ import { Task } from "../models/tasks";
 import { Team } from "../models/team";
 import jwt from "jsonwebtoken";
 import url from "url";
+import { Notification } from "../models/notification";
 
 interface CommentRoom {
   [taskId: string]: WebSocket[];
@@ -34,61 +35,49 @@ export const initCommentWS = () => {
         // @ts-ignore
         const msg = JSON.parse(rawMessage.toLocaleString());
 
-        // JOIN ROOM
+        // joining the room
         if (msg.type === "join") {
           const taskId = msg.payload.taskId;
           if (!taskId) return;
 
           if (!rooms[taskId]) rooms[taskId] = [];
 
-          // avoid duplicate sockets
           if (!rooms[taskId].includes(socket)) {
             rooms[taskId].push(socket);
           }
 
           // attach room to socket
           (socket as any).room = taskId;
-          console.log("JOIN MSG:", msg);
-          console.log("JOINED ROOM:", taskId);
-          console.log("SOCKET ROOM LIST:", rooms[taskId].length);
-
-          console.log("joined task room:", taskId);
           return;
         }
 
-        // CHAT MESSAGE
+        // chating
         if (msg.type === "chat") {
           const userId = (socket as any).userId;
           const roomId = msg.payload.taskId || (socket as any).room;
           const message = msg.payload.message;
 
-          console.log("CHAT EVENT RECEIVED");
-          console.log("userId:", userId);
-          console.log("roomId:", roomId);
-
           if (!roomId || !message) {
-            console.log("❌ Missing roomId or message");
+            console.log("Missing roomId or message");
             return;
           }
 
           const task = await Task.findById(roomId);
           if (!task || !task.teamId) {
-            console.log("❌ Task not found or no teamId:", roomId);
+            console.log("Task not found or no teamId:", roomId);
             return;
           }
 
           const team = await Team.findById(task.teamId);
           if (!team) {
-            console.log("❌ Team not found:", task.teamId);
+            console.log("Team not found:", task.teamId);
             return;
           }
 
           const isMember = team.members.some((m) => m.toString() === userId);
-          console.log("Team members:", team.members);
-          console.log("Checking userId:", userId);
 
           if (!isMember) {
-            console.log("❌ User is not a team member");
+            console.log("User is not a team member");
             return;
           }
 
@@ -97,6 +86,21 @@ export const initCommentWS = () => {
             userId,
             message,
           });
+
+          for (const member of team.members) {
+            
+            // separating sender and receiver
+            if (member.toString() === userId.toString()) continue;
+
+            await Notification.create({
+              userId: member,
+              fromId: userId, 
+              commentId: savedComment._id,
+              taskId: roomId,
+              type: "comment",
+              isRead: false,
+            });
+          }
 
           const chatPayload = JSON.stringify({
             type: "receive-message",
@@ -119,14 +123,8 @@ export const initCommentWS = () => {
               client.send(chatPayload);
             }
           });
-          if (!task) return console.log("❌ Task not found:", roomId);
-          if (!team)
-            return console.log("❌ Team not found for task:", task.teamId);
-          if (!isMember)
-            return console.log("❌ User is not a team member:", userId);
         }
       } catch (err) {
-        console.log("here closed from message");
         console.log("WS Error:", err);
       }
     });
