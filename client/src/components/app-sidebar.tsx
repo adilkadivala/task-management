@@ -18,14 +18,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { CheckCircle2 } from "lucide-react";
+import { Workflow } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const data = {
   // footer
   user: {
-    name: "shadcn",
-    email: "m@example.com",
+    name: "Adil",
+    email: "adil@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
 
@@ -57,7 +57,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
               <Link to="/">
-                <CheckCircle2 className="w-5 h-5 text-primary" />
+                <Workflow className="w-5 h-5 text-primary" />
                 <span className="text-base font-semibold">TaskFlow</span>
               </Link>
             </SidebarMenuButton>

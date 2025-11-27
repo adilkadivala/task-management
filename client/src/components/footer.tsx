@@ -1,30 +1,46 @@
+import { Link } from "react-router-dom";
+
 const Footer = () => {
   const date = new Date();
   const newDate = date.getFullYear();
 
+  const socials = [
+    {
+      name: "X",
+      url: "https://x.com/adil_kadival",
+    },
+    {
+      name: "Github",
+      url: "https://github/adilkadivala",
+    },
+    {
+      name: "LinkedIn",
+      url: "https://linkedin.com/in/adilkadivala",
+    },
+  ];
+
   return (
-    <footer className="w-full bg-[#F7F5F3] border-t border-[rgba(55,50,47,0.12)]">
+    <footer className="w-full bg-accent border border-primary/10">
       <div className="w-full max-w-[1060px] mx-auto">
-        <div className="border-t border-[#E0DEDB] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-[#605A57] text-sm">
             © {newDate} TaskFlow. All rights reserved.
           </p>
           <div className="flex gap-6">
-            {["Twitter", "GitHub", "LinkedIn"].map((social) => (
-              <a
-                key={social}
-                href="#"
+            {socials.map((social) => (
+              <Link
+                to={social.url}
                 className="text-[#605A57] hover:text-[#37322F] transition-colors text-sm"
               >
-                {social}
-              </a>
+                {social.name}
+              </Link>
             ))}
           </div>
         </div>
       </div>
       {/* Bottom */}
       <div className="hidden p-0 h-full lg:flex items-stretch justify-center w-full">
-        <span className="text-[200px] font-stretch-extra-expanded font-extrabold tracking-normal bg-linear-to-t from-primary to-secondary/20 bg-clip-text text-transparent">
+        <span className="text-[200px] font-stretch-extra-expanded font-extrabold tracking-normal bg-linear-to-t from-accent to-accent-foreground/20 bg-clip-text text-transparent">
           TaskFlow
         </span>
       </div>

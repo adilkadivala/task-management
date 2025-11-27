@@ -1,4 +1,3 @@
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -12,13 +11,10 @@ import { Link } from "react-router-dom";
 import { OTPForm } from "./otp-form";
 import { useState } from "react";
 
-export function ForgotPasswordForm({
-  className,
-  ...props
-}: React.ComponentProps<"form">) {
+export function ForgotPasswordForm() {
   const [otpForm, setOtpForm] = useState<boolean>(false);
   return (
-    <form className={cn("flex flex-col gap-6", className)} {...props}>
+    <form>
       <FieldGroup>
         {otpForm === true ? (
           <>

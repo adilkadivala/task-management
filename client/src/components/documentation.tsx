@@ -12,19 +12,17 @@ export default function DocumentationSection() {
       title: "Plan your schedules",
       description:
         "Explore your data, build your dashboard,\nbring your team together.",
-      image: "/modern-dashboard-interface-with-data-visualization.jpg",
+      image: "/dashboard.png",
     },
     {
       title: "Data to insights in minutes",
-      description:
-        "Transform raw data into actionable insights",
-      image: "/analytics-dashboard.png",
+      description: "Transform raw data into actionable insights",
+      image: "/dashboard.png",
     },
     {
       title: "Collaborate seamlessly",
-      description:
-        "Work together in real-time with your team",
-      image: "/team-collaboration-interface-with-shared-workspace.jpg",
+      description: "Work together in real-time with your team",
+      image: "/dashboard.png",
     },
   ];
 
@@ -103,15 +101,19 @@ export default function DocumentationSection() {
           {/* Right Column - Image */}
           <div className="w-full md:w-auto rounded-lg flex flex-col justify-center items-center gap-2 order-1 md:order-2 ">
             <div className="w-full md:w-[980px] h-[250px] md:h-[420px] bg-white overflow-hidden rounded-lg flex flex-col justify-start items-start">
-              <div
-                className={`w-full h-full transition-all duration-300 ${
-                  activeCard === 0
-                    ? "bg-gradient-to-br from-blue-50 to-blue-100"
-                    : activeCard === 1
-                    ? "bg-gradient-to-br from-purple-50 to-purple-100"
-                    : "bg-gradient-to-br from-green-50 to-green-100"
-                }`}
-              />
+              {cards.map((card) => (
+                <img
+                  src={card.image}
+                  className={`object-cover h-fit w-fit transition-all duration-300 ${
+                    activeCard === 0
+                      ? "bg-gradient-to-br from-blue-50 to-blue-100"
+                      : activeCard === 1
+                      ? "bg-gradient-to-br from-purple-50 to-purple-100"
+                      : "bg-gradient-to-br from-green-50 to-green-100"
+                  }`}
+                  alt=""
+                />
+              ))}
             </div>
           </div>
         </div>
