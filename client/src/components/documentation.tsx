@@ -9,19 +9,21 @@ export default function DocumentationSection() {
 
   const cards = [
     {
-      title: "Plan your schedules",
+      title: "Plan Your Work Efficiently",
       description:
-        "Explore your data, build your dashboard,\nbring your team together.",
+        "Organize tasks, set priorities, and keep your daily workflow structured and predictable.",
       image: "/dashboard.png",
     },
     {
-      title: "Data to insights in minutes",
-      description: "Transform raw data into actionable insights",
+      title: "Insights at a Glance",
+      description:
+        "Track task status, progress, and team activity with clean, easy-to-read dashboards.",
       image: "/dashboard.png",
     },
     {
-      title: "Collaborate seamlessly",
-      description: "Work together in real-time with your team",
+      title: "Collaborate Seamlessly",
+      description:
+        "Work together with your team in real-time through shared tasks and instant updates.",
       image: "/dashboard.png",
     },
   ];
@@ -44,15 +46,17 @@ export default function DocumentationSection() {
     <div className="w-full border-b border-[rgba(55,50,47,0.12)] flex flex-col justify-center items-center">
       {/* Header Section */}
       <div className="self-stretch px-6 md:px-24 py-12 md:py-16 border-b border-[rgba(55,50,47,0.12)] flex justify-center items-center gap-6">
-        <div className="w-full max-w-[586px] px-6 py-5  overflow-hidden rounded-lg flex flex-col justify-start items-center gap-4 ">
+        <div className="w-full max-w-[586px] px-6 py-5 overflow-hidden rounded-lg flex flex-col justify-start items-center gap-4">
           <Badge>Platform Features</Badge>
+
           <div className="self-stretch text-center flex justify-center flex-col text-[#49423D] text-3xl md:text-5xl font-semibold leading-tight md:leading-[60px] font-sans tracking-tight">
-            Streamline your business operations
+            Everything you need to stay organized
           </div>
+
           <div className="self-stretch text-center text-[#605A57] text-base font-normal leading-7 font-sans">
-            Manage schedules, analyze data, and collaborate with your team
+            Plan tasks, monitor progress, and collaborate with your team —
             <br />
-            all in one powerful platform.
+            all from one simple and powerful workspace.
           </div>
         </div>
       </div>

@@ -10,12 +10,12 @@ export default function BentoOfTaskFlow() {
           <div className="w-full max-w-[586px] px-4 sm:px-6 py-4 sm:py-5 overflow-hidden rounded-lg flex flex-col justify-start items-center gap-3 sm:gap-4">
             <Badge>Work-flow</Badge>
             <div className="w-full max-w-[560.55px] text-center flex justify-center flex-col text-[#49423D] text-xl sm:text-2xl md:text-3xl lg:text-5xl font-semibold leading-tight md:leading-[60px] font-sans tracking-tight">
-              Built for absolute clarity and focused work
+              Built for clarity, focus, and smooth execution
             </div>
             <div className="self-stretch text-center text-primary text-sm sm:text-base font-normal leading-6 sm:leading-7 font-sans">
-              Stay focused with tools that organize, connect
+              Stay organized with tools that keep your work structured,
               <br className="hidden sm:block" />
-              and turn information into confident decisions.
+              your team connected, and every task moving with purpose.
             </div>
           </div>
         </div>
@@ -26,8 +26,8 @@ export default function BentoOfTaskFlow() {
 
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 border-x border-primary/5">
             <BentoCard
-              title="Smart. Simple. Brilliant."
-              desc="Your data is beautifully organized so you see everything clearly without the clutter."
+              title="Smart. Simple. Organized."
+              desc="Everything stays neatly structured so you can focus on work instead of searching through clutter."
             >
               <div className="object-cover w-fit h-fit rounded-tl-lg rounded-bl-lg overflow-hidden">
                 <img src="dashboard.png" alt="bento-grid-img" />
@@ -35,8 +35,8 @@ export default function BentoOfTaskFlow() {
             </BentoCard>
 
             <BentoCard
-              title="Creat a team, Invite members"
-              desc="Create team, list out team tasks, assign task to member, track your tasks status."
+              title="Create Teams & Manage Members"
+              desc="Build teams, invite members, assign tasks, and track progress—all in one organized workspace."
             >
               {/* create a team, invite team member */}
               <div className="object-cover w-fit h-fit rounded-tl-lg rounded-bl-lg overflow-hidden">
@@ -45,8 +45,8 @@ export default function BentoOfTaskFlow() {
             </BentoCard>
 
             <BentoCard
-              title="Real-Time chat with members"
-              desc="Collabrate with the Team, Disscuss on the Task, let help to assignee for better resoluton of the task."
+              title="Real-Time Chat on Tasks"
+              desc="Collaborate instantly with teammates, discuss tasks, and resolve issues faster with task-based messaging."
             >
               {/* chat on the task room */}
               <div className="object-cover w-fit h-fit rounded-tl-lg rounded-bl-lg overflow-hidden">
@@ -55,8 +55,8 @@ export default function BentoOfTaskFlow() {
             </BentoCard>
 
             <BentoCard
-              title="Smart. Simple. Brilliant."
-              desc="Your data is beautifully organized so you see everything clearly without the clutter."
+              title="Track Tasks & Member Activity"
+              desc="Stay updated with task timelines, member performance, and team activity at a glance."
             >
               {/* follow task and teammember */}
               <div className="object-cover w-fit h-fit rounded-tl-lg rounded-bl-lg overflow-hidden">

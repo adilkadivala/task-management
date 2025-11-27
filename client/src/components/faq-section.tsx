@@ -10,34 +10,34 @@ interface FAQItem {
 
 const faqData: FAQItem[] = [
   {
-    question: "What is Brillance and who is it for?",
+    question: "What is TaskFlow and who is it for?",
     answer:
-      "Brillance is a comprehensive billing automation platform designed for businesses that need custom contract management. It's perfect for SaaS companies, service providers, and enterprises looking to streamline their billing processes.",
+      "TaskFlow is a simple and efficient task management platform designed for individuals and teams. It's perfect for freelancers, small teams, and organizations that need a clean way to plan tasks, manage workflows, and collaborate in real time.",
   },
   {
-    question: "How does the custom contract billing work?",
+    question: "How does TaskFlow help teams work better?",
     answer:
-      "Our platform automatically processes your custom contracts, calculates billing amounts based on your specific terms, and generates invoices. You can set up complex pricing structures, usage-based billing, and custom billing cycles.",
+      "With TaskFlow, teams can create projects, assign tasks, track progress, and communicate through real-time task-based chat. Everything stays organized inside your workspace, so your team always stays aligned.",
   },
   {
-    question: "Can I integrate Brillance with my existing tools?",
+    question: "Does TaskFlow support real-time features?",
     answer:
-      "Yes! Brillance integrates seamlessly with popular CRM systems, accounting software, and payment processors. We support APIs and webhooks for custom integrations with your existing workflow.",
+      "Yes! TaskFlow includes real-time chat inside each task, instant updates, and live notifications for comments, assignments, and task changes — ensuring you never miss anything important.",
   },
   {
-    question: "What kind of support do you provide?",
+    question: "Can I use TaskFlow alone without a team?",
     answer:
-      "We offer 24/7 customer support, dedicated account managers for enterprise clients, comprehensive documentation, and onboarding assistance to help you get started quickly.",
+      "Absolutely. TaskFlow works great for personal task planning. You can organize your workflow, track daily progress, and expand into team collaboration anytime.",
   },
   {
-    question: "Is my data secure with Brillance?",
+    question: "Is my data secure on TaskFlow?",
     answer:
-      "Absolutely. We use enterprise-grade security measures including end-to-end encryption, SOC 2 compliance, and regular security audits. Your data is stored in secure, redundant data centers.",
+      "Yes. TaskFlow uses secure authentication, encrypted communication, and professionally managed databases to keep your data safe and private.",
   },
   {
-    question: "How do I get started with Brillance?",
+    question: "How do I get started with TaskFlow?",
     answer:
-      "Getting started is simple! Sign up for our free trial, connect your existing systems, and our onboarding team will help you set up your first custom billing workflow within 24 hours.",
+      "Just create an account, set up your first task or team, and you’re ready to go! The platform is designed to be simple, fast, and intuitive for all types of users.",
   },
 ];
 
@@ -59,9 +59,9 @@ export default function FAQSection() {
             Frequently Asked Questions
           </div>
           <div className="w-full text-[#605A57] text-base font-normal leading-7 font-sans">
-            Explore your data, build your dashboard,
+            Create a Task, Build your dashboard,
             <br className="hidden md:block" />
-            bring your team together.
+            Chat with your team member.
           </div>
         </div>
 

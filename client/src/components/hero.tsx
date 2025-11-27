@@ -17,19 +17,21 @@ export default function Hero() {
 
   const cards: CARD[] = [
     {
-      title: "Smart task organization",
+      title: "Simple Task Organization",
       description:
-        "Automatically categorize and prioritize tasks with intelligent AI-powered suggestions.",
+        "Create, organize, and track your tasks with an easy and clean workflow.",
       image: "dashboard.png",
     },
     {
-      title: "Solo or Work with Team",
-      description: "follow your daily task with team and",
+      title: "Work Solo or With Your Team",
+      description:
+        "Manage your personal tasks or collaborate with your team in shared projects.",
       image: "dashboard.png",
     },
     {
-      title: "Collaborate seamlessly",
-      description: "Work together in real-time with your team",
+      title: "Real-Time Collaboration",
+      description:
+        "Chat, comment, and stay updated instantly with live activity inside each task.",
       image: "dashboard.png",
     },
   ];
@@ -57,12 +59,13 @@ export default function Hero() {
     <section id="features" className="flex flex-col items-center">
       <div className="text-center max-w-3xl px-4">
         <h1 className="text-primary text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-serif leading-tight">
-          Intelligent task management <br /> by TaskFlow
+          Stay organized. Work smarter. <br /> Welcome to TaskFlow.
         </h1>
 
         <p className="text-gray-600 mt-4 text-sm sm:text-lg">
-          Streamline your workflow with AI-powered task tracking, real-time
-          collaboration, and seamless project organization.
+          TaskFlow brings clarity to your work with intelligent task management,
+          real-time collaboration, and effortless team coordination — all in one
+          place.
         </p>
       </div>
 
