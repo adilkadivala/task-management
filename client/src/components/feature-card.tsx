@@ -23,7 +23,7 @@ const FeatureCard = ({
       {isActive && (
         <div className="absolute top-0 left-0 w-full h-0.5 bg-[rgba(50,45,43,0.08)]">
           <div
-            className="h-full bg-[#322D2B] transition-all duration-100 ease-linear"
+            className="h-full bg-[#322D2B] transition-all ease-linear"
             style={{ width: `${progress}%` }}
           />
         </div>

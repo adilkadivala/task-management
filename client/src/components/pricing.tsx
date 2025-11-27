@@ -32,7 +32,10 @@ export default function PricingSection() {
   ];
 
   return (
-    <section className="w-full py-16 sm:py-20 md:py-24 border-b border-[rgba(55,50,47,0.12)]">
+    <section
+      id="pricing"
+      className="w-full py-16 sm:py-20 md:py-24 border-b border-[rgba(55,50,47,0.12)]"
+    >
       <div className="w-full max-w-[1060px] mx-auto px-4 sm:px-6 md:px-8 lg:px-0">
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-normal text-[#37322F] text-center mb-12 leading-tight">
           Simple, transparent pricing
