@@ -6,7 +6,6 @@ import {
   updatePassword,
   verifyOtp,
 } from "../controller/auth";
-import { authMiddleware } from "../middleware/auth";
 const authRouter: Router = express.Router();
 
 // sign-up
@@ -19,6 +18,8 @@ authRouter.route("/api/v1/forgot-password").post(forgotPassword);
 authRouter.route("/api/v1/verify-otp").post(verifyOtp);
 // reset-password
 authRouter.route("/api/v1/reset-password").post(updatePassword);
-// about-me
+
+
+
 
 export default authRouter;

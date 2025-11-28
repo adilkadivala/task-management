@@ -13,7 +13,6 @@ import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { Spinner } from "./ui/spinner";
-
 export function SingIn({ className, ...props }: React.ComponentProps<"form">) {
   const [userData, setUserData] = useState<UserData>({
     email: "",
@@ -61,6 +60,16 @@ export function SingIn({ className, ...props }: React.ComponentProps<"form">) {
       }, 1000);
     }
   };
+
+  // social auth
+  const loginWithGoogle = () => {
+    window.location.href = `${server_api}/social-auth/signin?provider=google`;
+  };
+
+  const loginWithGitHub = () => {
+    window.location.href = `${server_api}/social-auth/signin?provider=github`;
+  };
+
   return (
     <form
       className={cn("flex flex-col gap-6", className)}
@@ -136,17 +145,28 @@ export function SingIn({ className, ...props }: React.ComponentProps<"form">) {
         <FieldSeparator>Or continue with</FieldSeparator>
         <Field>
           <div className="flex items-center justify-center gap-1 w-full">
-            <Button className="w-1/2" variant="outline" size="icon">
+            <Button
+              className="w-1/2"
+              variant="outline"
+              size="icon"
+              onClick={loginWithGoogle}
+            >
               Google
             </Button>
-            <Button className="w-1/2" variant="outline" size="icon">
+            <Button
+              className="w-1/2"
+              variant="outline"
+              size="icon"
+              onClick={loginWithGitHub}
+            >
               Github
             </Button>
           </div>
           <FieldDescription className="text-center">
-            Don't have an account? 
+            Don't have an account?
             <Link to={"/auth/sign-up"} className="underline underline-offset-4">
-             {" "} Sign up
+              {" "}
+              Sign up
             </Link>
           </FieldDescription>
         </Field>

@@ -13,7 +13,7 @@ import { check, generate } from "../services/otp";
 import { sendOtpMail } from "../services/mail";
 import { Otp } from "../models/otp";
 
-const JWT_SECRET = process.env.JWT_SECRET!;
+const AUTH_SECRET = process.env.AUTH_SECRET!;
 const BCRYPT_SALT = process.env.BCRYPT_SALT!;
 
 // signUp
@@ -84,7 +84,7 @@ const signIn = async (
     const verifyPass = await incrypt.compare(password, isUserExist.password);
 
     if (verifyPass) {
-      const token = jwt.sign({ id: isUserExist._id.toString() }, JWT_SECRET);
+      const token = jwt.sign({ id: isUserExist._id.toString() }, AUTH_SECRET);
       return res
         .status(200)
         .json({ message: "logged in successfully!!", token });

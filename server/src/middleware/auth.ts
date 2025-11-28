@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
-// Make sure JWT_SECRET is defined
-const JWT_SECRET = process.env.JWT_SECRET as string;
+// Make sure AUTH_SECRET is defined
+const AUTH_SECRET = process.env.AUTH_SECRET as string;
 
 const authMiddleware = async (
   req: Request,
@@ -24,7 +24,7 @@ const authMiddleware = async (
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, AUTH_SECRET);
 
     if (decoded) {
     // @ts-ignore

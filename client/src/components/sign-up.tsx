@@ -14,8 +14,6 @@ import { Spinner } from "@/components/ui/spinner";
 import axios from "axios";
 import { toast } from "sonner";
 
-// env.  variable
-
 export function SingUp({ className, ...props }: React.ComponentProps<"form">) {
   const [userData, setUserData] = useState<UserData>({
     name: "",
@@ -27,10 +25,7 @@ export function SingUp({ className, ...props }: React.ComponentProps<"form">) {
   const [error, setError] = useState<string | null>(null);
   const [userStatus, setUserStatus] = useState<string | null>(null);
 
-  // const navigate = useNavigate();
-
   // form submittion
-
   const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -65,12 +60,18 @@ export function SingUp({ className, ...props }: React.ComponentProps<"form">) {
       setIsLoading(false);
     }
   };
+
+  // social auth
+  const loginWithGoogle = () => {
+    window.location.href = `${server_api}/social-auth/signin?provider=google`;
+  };
+
+  const loginWithGitHub = () => {
+    window.location.href = `${server_api}/social-auth/signin?provider=github`;
+  };
+
   return (
-    <form
-      className={cn("flex flex-col gap-6", className)}
-      {...props}
-      onSubmit={handleForm}
-    >
+    <form onSubmit={handleForm}>
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
           <h1 className="text-2xl font-bold">Create account to manage Tasks</h1>
@@ -144,17 +145,27 @@ export function SingUp({ className, ...props }: React.ComponentProps<"form">) {
           />
         </Field>
         <Field>
-          <Button type="submit">
+          <Button type="button">
             {isLoading ? <Spinner className="animate-spin" /> : "Sign Up"}
           </Button>
         </Field>
         <FieldSeparator>Or continue with</FieldSeparator>
         <Field>
           <div className="flex items-center justify-center gap-1 w-full">
-            <Button className="w-1/2" variant="outline" size="icon">
+            <Button
+              className="w-1/2"
+              variant="outline"
+              size="icon"
+              onClick={loginWithGoogle}
+            >
               Google
             </Button>
-            <Button className="w-1/2" variant="outline" size="icon">
+            <Button
+              className="w-1/2"
+              variant="outline"
+              size="icon"
+              onClick={loginWithGitHub}
+            >
               Github
             </Button>
           </div>

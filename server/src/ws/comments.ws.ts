@@ -23,7 +23,7 @@ export const initCommentWS = () => {
 
       if (!token) return socket.close();
 
-      const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+      const decoded: any = jwt.verify(token, process.env.AUTH_SECRET!);
       (socket as any).userId = decoded.id;
     } catch (err) {
       socket.close();
