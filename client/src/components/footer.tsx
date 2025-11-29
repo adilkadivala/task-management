@@ -23,14 +23,14 @@ const Footer = () => {
     <footer className="w-full bg-accent border border-primary/10">
       <div className="w-full max-w-[1060px] mx-auto">
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-[#605A57] text-sm">
+          <p className="text-primary text-sm">
             © {newDate} TaskFlow. All rights reserved.
           </p>
           <div className="flex gap-6">
             {socials.map((social) => (
               <Link
                 to={social.url}
-                className="text-[#605A57] hover:text-[#37322F] transition-colors text-sm"
+                className="text-primary/65 hover:text-primary transition-colors text-sm"
               >
                 {social.name}
               </Link>

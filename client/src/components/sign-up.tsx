@@ -1,4 +1,4 @@
-import { cn, server_api, type UserData } from "@/lib/utils";
+import { server_api, type UserData } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -14,7 +14,7 @@ import { Spinner } from "@/components/ui/spinner";
 import axios from "axios";
 import { toast } from "sonner";
 
-export function SingUp({ className, ...props }: React.ComponentProps<"form">) {
+export function SingUp() {
   const [userData, setUserData] = useState<UserData>({
     name: "",
     email: "",
@@ -63,11 +63,11 @@ export function SingUp({ className, ...props }: React.ComponentProps<"form">) {
 
   // social auth
   const loginWithGoogle = () => {
-    window.location.href = `${server_api}/social-auth/signin?provider=google`;
+    window.location.href = `${server_api}/social-auth/signin/google`;
   };
 
   const loginWithGitHub = () => {
-    window.location.href = `${server_api}/social-auth/signin?provider=github`;
+    window.location.href = `${server_api}/social-auth/signin/github`;
   };
 
   return (
@@ -145,7 +145,7 @@ export function SingUp({ className, ...props }: React.ComponentProps<"form">) {
           />
         </Field>
         <Field>
-          <Button type="button">
+          <Button type="submit">
             {isLoading ? <Spinner className="animate-spin" /> : "Sign Up"}
           </Button>
         </Field>
@@ -153,6 +153,7 @@ export function SingUp({ className, ...props }: React.ComponentProps<"form">) {
         <Field>
           <div className="flex items-center justify-center gap-1 w-full">
             <Button
+              type="button"
               className="w-1/2"
               variant="outline"
               size="icon"
@@ -161,6 +162,7 @@ export function SingUp({ className, ...props }: React.ComponentProps<"form">) {
               Google
             </Button>
             <Button
+              type="button"
               className="w-1/2"
               variant="outline"
               size="icon"

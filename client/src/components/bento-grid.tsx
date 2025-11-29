@@ -9,10 +9,10 @@ export default function BentoOfTaskFlow() {
         <div className="self-stretch px-4 sm:px-6 md:px-24 py-8 sm:py-12 md:py-16 border-b border-primary/10 flex justify-center items-center gap-6">
           <div className="w-full max-w-[586px] px-4 sm:px-6 py-4 sm:py-5 overflow-hidden rounded-lg flex flex-col justify-start items-center gap-3 sm:gap-4">
             <Badge>Work-flow</Badge>
-            <div className="w-full max-w-[560.55px] text-center flex justify-center flex-col text-[#49423D] text-xl sm:text-2xl md:text-3xl lg:text-5xl font-semibold leading-tight md:leading-[60px] font-sans tracking-tight">
+            <div className="w-full text-center flex justify-center flex-col text-primary text-xl sm:text-2xl md:text-3xl lg:text-5xl font-semibold leading-tight md:leading-[60px] font-sans tracking-tight">
               Built for clarity, focus, and smooth execution
             </div>
-            <div className="self-stretch text-center text-primary text-sm sm:text-base font-normal leading-6 sm:leading-7 font-sans">
+            <div className="self-stretch text-center text-primary/65 dark:text-secondary/65 text-sm sm:text-base font-normal leading-6 sm:leading-7 font-sans">
               Stay organized with tools that keep your work structured,
               <br className="hidden sm:block" />
               your team connected, and every task moving with purpose.
@@ -29,8 +29,8 @@ export default function BentoOfTaskFlow() {
               title="Smart. Simple. Organized."
               desc="Everything stays neatly structured so you can focus on work instead of searching through clutter."
             >
-              <div className="object-cover w-fit h-fit rounded-tl-lg rounded-bl-lg overflow-hidden">
-                <img src="dashboard.png" alt="bento-grid-img" />
+              <div className="rounded-tl-lg rounded-bl-lg overflow-hidden">
+                <img src="dashboard.png" alt="bento-grid-img" className="object-cover w-fit h-fit"/>
               </div>
             </BentoCard>
 
@@ -39,8 +39,8 @@ export default function BentoOfTaskFlow() {
               desc="Build teams, invite members, assign tasks, and track progress—all in one organized workspace."
             >
               {/* create a team, invite team member */}
-              <div className="object-cover w-fit h-fit rounded-tl-lg rounded-bl-lg overflow-hidden">
-                <img src="dashboard.png" alt="bento-grid-img" />
+              <div className="rounded-tl-lg rounded-bl-lg overflow-hidden">
+                <img src="dashboard.png" alt="bento-grid-img" className="object-cover w-fit h-fit"/>
               </div>
             </BentoCard>
 
@@ -49,8 +49,8 @@ export default function BentoOfTaskFlow() {
               desc="Collaborate instantly with teammates, discuss tasks, and resolve issues faster with task-based messaging."
             >
               {/* chat on the task room */}
-              <div className="object-cover w-fit h-fit rounded-tl-lg rounded-bl-lg overflow-hidden">
-                <img src="dashboard.png" alt="bento-grid-img" />
+              <div className="rounded-tl-lg rounded-bl-lg overflow-hidden">
+                <img src="dashboard.png" alt="bento-grid-img" className="object-cover w-fit h-fit"/>
               </div>
             </BentoCard>
 
@@ -59,8 +59,8 @@ export default function BentoOfTaskFlow() {
               desc="Stay updated with task timelines, member performance, and team activity at a glance."
             >
               {/* follow task and teammember */}
-              <div className="object-cover w-fit h-fit rounded-tl-lg rounded-bl-lg overflow-hidden">
-                <img src="dashboard.png" alt="bento-grid-img" />
+              <div className="rounded-tl-lg rounded-bl-lg overflow-hidden">
+                <img src="dashboard.png" alt="bento-grid-img" className="object-cover w-fit h-fit"/>
               </div>
             </BentoCard>
           </div>

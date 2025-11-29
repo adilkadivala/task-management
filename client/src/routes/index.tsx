@@ -22,11 +22,8 @@ const Paths = () => {
       <Route path="/dashboard" element={<DashLayout />}>
         <Route index element={<Dashboard />} />
         <Route path="task-management" element={<TaskManagement />} />
-        <Route path="calender" element={<Dashboard />} />
+        <Route path="teams" element={<Dashboard />} />
       </Route>
-
-
-      
     </Routes>
   );
 };

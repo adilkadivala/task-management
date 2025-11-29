@@ -2,31 +2,38 @@ export default function PricingSection() {
   const plans = [
     {
       name: "Starter",
-      price: "$29",
-      description: "Perfect for freelancers",
-      features: ["Up to 5 projects", "Basic integrations", "Email support"],
+      price: "Free",
+      description: "Perfect for individuals and personal productivity",
+      features: [
+        "Unlimited personal tasks",
+        "Single user workspace",
+        "Basic task filters",
+        "Real-time task updates",
+      ],
     },
     {
-      name: "Professional",
-      price: "$79",
-      description: "For growing teams",
+      name: "Team",
+      price: "$12/user",
+      description: "Built for small teams and collaboration",
       features: [
-        "Unlimited projects",
-        "Advanced integrations",
-        "Priority support",
-        "Team collaboration",
+        "Unlimited teams & projects",
+        "Task assignment & tracking",
+        "Real-time chat on tasks",
+        "Notifications & activity log",
+        "Invite up to 20 members",
       ],
       highlighted: true,
     },
     {
-      name: "Enterprise",
+      name: "Organization",
       price: "Custom",
-      description: "For large organizations",
+      description: "For larger teams that need advanced control",
       features: [
-        "Everything in Pro",
-        "Custom integrations",
-        "24/7 support",
-        "Dedicated account manager",
+        "Unlimited members",
+        "Advanced permission controls",
+        "Priority customer support",
+        "Custom onboarding",
+        "Dedicated workspace manager",
       ],
     },
   ];
@@ -34,10 +41,10 @@ export default function PricingSection() {
   return (
     <section
       id="pricing"
-      className="w-full py-16 sm:py-20 md:py-24 border-b border-[rgba(55,50,47,0.12)]"
+      className="w-full py-16 md:py-24 border-b border-primary/10"
     >
       <div className="w-full max-w-[1060px] mx-auto px-4 sm:px-6 md:px-8 lg:px-0">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-normal text-[#37322F] text-center mb-12 leading-tight">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-normal text-primary text-center mb-12 leading-tight">
           Simple, transparent pricing
         </h2>
 
@@ -45,22 +52,22 @@ export default function PricingSection() {
           {plans.map((plan, idx) => (
             <div
               key={idx}
-              className={`p-8 rounded-lg border transition-all ${
+              className={`p-4 lg:p-8 rounded-lg border transition-all ${
                 plan.highlighted
-                  ? "border-[#37322F] bg-[#37322F] text-white shadow-lg"
-                  : "border-[#E0DEDB] bg-white hover:shadow-lg"
+                  ? "border-primary bg-primary text-secondary shadow-lg"
+                  : "border-primary/20 bg-card hover:shadow-lg"
               }`}
             >
               <h3
                 className={`text-xl font-semibold mb-2 ${
-                  plan.highlighted ? "text-white" : "text-[#37322F]"
+                  plan.highlighted ? "text-secondary" : "text-primary"
                 }`}
               >
                 {plan.name}
               </h3>
               <p
                 className={`text-sm mb-4 ${
-                  plan.highlighted ? "text-white/80" : "text-[#605A57]"
+                  plan.highlighted ? "text-secondary/85" : "text-primary"
                 }`}
               >
                 {plan.description}
@@ -71,15 +78,15 @@ export default function PricingSection() {
               <button
                 className={`w-full py-2 px-4 rounded-lg font-medium mb-6 transition-colors ${
                   plan.highlighted
-                    ? "bg-white text-[#37322F] hover:bg-[#F5F3F1]"
-                    : "bg-[#37322F] text-white hover:bg-[#37322F]/90"
+                    ? "bg-secondary text-primary"
+                    : "bg-primary text-secondary hover:bg-primary/90"
                 }`}
               >
                 Get started
               </button>
               <ul
                 className={`space-y-3 text-sm ${
-                  plan.highlighted ? "text-white/80" : "text-[#605A57]"
+                  plan.highlighted ? "text-secondary" : "text-primary"
                 }`}
               >
                 {plan.features.map((feature, i) => (

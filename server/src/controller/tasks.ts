@@ -43,13 +43,11 @@ const createTask = async (
       .status(200)
       .json({ message: "task created successfully", data: newTask });
   } catch (error: any) {
-    if (error.code === 11000) {
-      return res.status(409).json({
-        success: true,
-        message: "task with this title already exists for this user",
-      });
-    }
-    return next(error);
+    next(error);
+    return res.status(409).json({
+      success: true,
+      message: "task with this title already exists for this user",
+    });
   }
 };
 
@@ -86,7 +84,7 @@ const getSpecificTask = async (
     const userId = req.userId;
     const task = await Task.findOne({ _id: taskId, userId });
     if (!task) {
-      return res.status(403).json({ message: "no task availabke to display" });
+      return res.status(404).json({ message: "no task availabke to display" });
     }
     return res.status(200).json({ message: "Your tasks", task });
   } catch (error: any) {
@@ -157,7 +155,7 @@ const deleteTask = async (
     const { taskId } = req.params;
 
     if (!taskId) {
-      return res.status(404).json({ message: "params not provided" });
+      return res.status(402).json({ message: "params not provided" });
     }
 
     const task = await Task.findById({
@@ -250,16 +248,9 @@ const searchTask = async (
     if (description)
       search.description = new RegExp(description.toString(), "i");
 
-    if (typeof title !== "string" && typeof description !== "string") {
-      return res.status(400).json({
-        message:
-          "Invalid query parameters. Use ?title=Go to Gym or ?description= Gym",
-      });
-    }
-
     if (!title && !description) {
       return res
-        .status(400)
+        .status(402)
         .json({ message: "Please provide title or description to search" });
     }
 
@@ -763,6 +754,7 @@ const taskRecents = async (
   }
 };
 
+// task recents  ---- why not team option 
 const getActivity = async (
   req: Request,
   res: Response,
@@ -770,6 +762,10 @@ const getActivity = async (
 ): Promise<Response | void> => {
   try {
     const { taskId } = req.params;
+
+    if (!taskId) {
+      return res.status(402).json({ message: "params not privided" });
+    }
 
     const activityLogs = await Activity.find({ taskId })
       .sort({ createdAt: -1 })

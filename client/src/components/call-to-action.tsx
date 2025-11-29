@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 const CallToAction = () => {
   return (
     <div className="w-full relative overflow-hidden flex flex-col justify-center items-center gap-2">
-      <div className="self-stretch px-6 md:px-24 py-12 md:py-12 border-t border-b border-[rgba(55,50,47,0.12)] flex justify-center items-center gap-6 relative z-10">
+      <div className="self-stretch px-6 md:px-24 py-12 md:py-12 border-t border-primary/15 flex justify-center items-center gap-6 relative z-10">
         <div className="absolute inset-0 w-full h-full overflow-hidden">
           <div className="w-full h-full relative">
             {Array.from({ length: 300 }).map((_, i) => (
@@ -24,10 +24,10 @@ const CallToAction = () => {
 
         <div className="w-full max-w-[586px] px-6 py-5 md:py-8 overflow-hidden rounded-lg flex flex-col justify-start items-center gap-6 relative z-20">
           <div className="self-stretch flex flex-col justify-start items-start gap-3">
-            <div className="self-stretch text-center flex justify-center flex-col text-[#49423D] text-3xl md:text-5xl font-semibold leading-tight md:leading-[56px] font-sans tracking-tight">
+            <div className="self-stretch text-center flex justify-center flex-col text-primary text-3xl md:text-5xl font-semibold leading-tight md:leading-[56px] font-sans tracking-tight">
               Ready to transform your project management?
             </div>
-            <div className="self-stretch text-center text-[#605A57] text-base leading-7 font-sans font-medium">
+            <div className="self-stretch text-center text-primary/65 dark:text-secondary/65 text-base leading-7 font-sans font-medium">
               Join thousands of teams using TaskFlow to
               <br />
               manage their projects more efficiently.

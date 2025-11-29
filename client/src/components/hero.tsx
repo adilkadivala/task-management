@@ -58,11 +58,11 @@ export default function Hero() {
   return (
     <section id="features" className="flex flex-col items-center">
       <div className="text-center max-w-3xl px-4">
-        <h1 className="text-primary text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-serif leading-tight">
+        <h1 className="text-primary text-2xl md:text-7xl font-serif leading-tight">
           Stay organized. Work smarter. <br /> Welcome to TaskFlow.
         </h1>
 
-        <p className="text-gray-600 mt-4 text-sm sm:text-lg">
+        <p className="text-primary/65 dark:text-secondary/65 mt-4 text-sm md:text-lg ">
           TaskFlow brings clarity to your work with intelligent task management,
           real-time collaboration, and effortless team coordination — all in one
           place.
@@ -75,14 +75,14 @@ export default function Hero() {
         </Button>
       </div>
 
-      <div className="w-full max-w-7xl mt-10">
-        <div className="relative w-full h-[250px] sm:h-[350px] lg:h-[600px] rounded-lg overflow-hidden shadow">
+      <div className="w-full px-5 h-full mt-10 overflow-hidden rounded-lg ">
+        <div className="relative  w-full h-[300px] md:h-[350px] lg:h-[700px] rounded-lg ">
           {cards.map((card, index) => (
             <img
               key={index}
               src={card.image}
               style={{ zIndex: active === index ? 10 : 0 }}
-              className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ${
+              className={`absolute inset-0 w-full h-full rounded-lg  object-cover transition-all duration-500 ${
                 active === index
                   ? "opacity-100 scale-100"
                   : "opacity-0 scale-95 blur-sm"
@@ -92,7 +92,7 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className="flex w-full max-w-7xl border-t border-b mt-10">
+      <div className=" flex flex-col md:flex-row w-full max-w-7xl border border-primary/10 mt-10">
         {cards.map((card, index) => (
           <FeatureCard
             key={index}

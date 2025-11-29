@@ -1,45 +1,144 @@
 import { Router } from "express";
-import { ExpressAuth } from "@auth/express";
-import Google from "@auth/express/providers/google";
-import GitHub from "@auth/express/providers/github";
+import passport from "passport";
+import session from "express-session";
+import axios from "axios";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import {
+  Strategy as GitHubStrategy,
+  Profile as GitHubProfile,
+} from "passport-github2";
 import { socialLoginController } from "../controller/social-auth";
 
 const socialAuthRouter = Router();
+
+/* --------------------------  SESSION MIDDLEWARE -------------------------- */
+// Needed for passport
 socialAuthRouter.use(
-  "/",
-  ExpressAuth({
-    providers: [
-      Google({
-        clientId: process.env.GOOGLE_CLIENT_ID!,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      }),
-      GitHub({
-        clientId: process.env.GITHUB_CLIENT_ID!,
-        clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-      }),
-    ],
-    callbacks: {
-      async signIn({ user, account }) {
-        await socialLoginController({ user, account });
-        return true;
-      },
-
-      async session({ session, token }) {
-        session.user = {
-          ...session.user,
-          id: token.sub!,
-        };
-        return session;
-      },
-
-      async redirect() {
-        return process.env.CLIENT_URL || "http://localhost:5173";
-      },
-    },
-
+  session({
     secret: process.env.AUTH_SECRET!,
-    trustHost: true,
+    resave: false,
+    saveUninitialized: false,
   })
+);
+
+socialAuthRouter.use(passport.initialize());
+socialAuthRouter.use(passport.session());
+
+/* ----------------------------- SERIALIZER -------------------------------- */
+passport.serializeUser((user, done) => {
+  done(null, user);
+});
+
+passport.deserializeUser((obj: any, done) => {
+  done(null, obj);
+});
+
+/* --------------------------- GOOGLE STRATEGY ----------------------------- */
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      callbackURL: process.env.GOOGLE_CALLBACK_URI!,
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      await socialLoginController({
+        user: {
+          id: profile.id,
+          name: profile.displayName,
+          email: profile.emails?.[0]?.value,
+        },
+        account: { provider: "google" },
+      });
+
+      return done(null, profile);
+    }
+  )
+);
+
+/* ---------------------------- GITHUB STRATEGY ----------------------------- */
+passport.use(
+  new GitHubStrategy(
+    {
+      clientID: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+      callbackURL: process.env.GITHUB_CALLBACK_URI!,
+    },
+    async (
+      accessToken: string,
+      refreshToken: string,
+      profile: GitHubProfile,
+      done: (error: any, user?: any) => void
+    ) => {
+      let email = profile.emails?.[0]?.value;
+
+      // If GitHub did NOT return email, fetch via API
+      if (!email) {
+        try {
+          const { data } = await axios.get(
+            "https://api.github.com/user/emails",
+            {
+              headers: {
+                Authorization: `token ${accessToken}`,
+                "User-Agent": "taskflowtask-management",
+              },
+            }
+          );
+
+          // Find primary email
+          const primaryEmail = data.find((e: any) => e.primary)?.email;
+          email = primaryEmail || data[0]?.email;
+        } catch (err) {
+          console.log("GitHub email fetch failed:", err);
+        }
+      }
+
+      if (!email) {
+        return done(new Error("Unable to get email from GitHub"), null);
+      }
+
+      await socialLoginController({
+        user: {
+          id: profile.id,
+          name: profile.username,
+          email: email,
+        },
+        account: { provider: "github" },
+      });
+
+      return done(null, profile);
+    }
+  )
+);
+
+/* --------------------------- AUTH ROUTES --------------------------- */
+
+// Google
+socialAuthRouter.get(
+  "/signin/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+socialAuthRouter.get(
+  "/callback/google",
+  passport.authenticate("google", { failureRedirect: "/auth/sign-in" }),
+  (req, res) => {
+    res.redirect(process.env.CLIENT_URL!);
+  }
+);
+
+// GitHub
+socialAuthRouter.get(
+  "/signin/github",
+  passport.authenticate("github", { scope: ["user:email"] })
+);
+
+socialAuthRouter.get(
+  "/callback/github",
+  passport.authenticate("github", { failureRedirect: "/auth/sign-in" }),
+  (req, res) => {
+    res.redirect(process.env.CLIENT_URL!);
+  }
 );
 
 export default socialAuthRouter;

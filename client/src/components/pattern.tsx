@@ -10,7 +10,7 @@ const Pattern = ({length}: PatternProps) => {
         {pattern.map((_, i) => (
           <div
             key={i}
-            className="self-stretch h-3 sm:h-4 rotate-[-45deg] origin-top-left  outline-[0.5px] outline-[rgba(3,7,18,0.08)] outline-offset-[-0.25px]"
+            className="self-stretch h-3 sm:h-4 rotate-[-45deg] origin-top-left outline-[0.5px] outline-primary/10 outline-offset-[-0.25px]"
           />
         ))}
       </div>

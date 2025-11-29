@@ -1,11 +1,6 @@
 "use client";
 
 import * as React from "react";
-import {
-  IconCalendar,
-  IconDashboard,
-  IconListDetails,
-} from "@tabler/icons-react";
 
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
@@ -18,10 +13,31 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Workflow } from "lucide-react";
+import { LayoutDashboard, ListChecks, Users, Workflow } from "lucide-react";
 import { Link } from "react-router-dom";
+import { TeamSwitcher } from "./team-switcher";
 
 const data = {
+  // teams
+
+  teams: [
+    // {
+    //   name: "Acme Inc",
+    //   logo: GalleryVerticalEnd,
+    //   plan: "Enterprise",
+    // },
+    // {
+    //   name: "Acme Corp.",
+    //   logo: AudioWaveform,
+    //   plan: "Startup",
+    // },
+    // {
+    //   name: "Evil Corp.",
+    //   logo: Command,
+    //   plan: "Free",
+    // },
+  ],
+
   // footer
   user: {
     name: "Adil",
@@ -34,17 +50,17 @@ const data = {
     {
       title: "Dashboard",
       url: "/dashboard",
-      icon: IconDashboard,
+      icon: LayoutDashboard,
     },
     {
       title: "Task",
       url: "/dashboard/task-management",
-      icon: IconListDetails,
+      icon: ListChecks,
     },
     {
-      title: "Calender",
-      url: "/dashboard/calender",
-      icon: IconCalendar,
+      title: "Teams",
+      url: "/dashboard/teams",
+      icon: Users,
     },
   ],
 };
@@ -53,6 +69,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
+        {data.teams.length > 0 && <TeamSwitcher teams={data.teams} />}
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
@@ -64,7 +81,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent className="">
+      <SidebarContent>
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>

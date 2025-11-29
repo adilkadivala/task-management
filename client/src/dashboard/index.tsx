@@ -3,8 +3,23 @@ import { ChartCompletionRate } from "@/components/charts/chart-completion";
 import { StatusChart } from "@/components/charts/status-chart";
 import { TasksByStatus } from "@/components/charts/tasks-by-status";
 import { SectionCards } from "@/components/section-cards";
+import { tasksApies } from "@/lib/task";
+import { useEffect, useState } from "react";
 
 const Dashboard = () => {
+  const [allTasks, setAllTasks] = useState();
+
+  const fetchTask = async () => {
+    const data = await tasksApies.soloTaskStats();
+    setAllTasks(data);
+  };
+
+  useEffect(() => {
+    fetchTask();
+  }, []);
+
+  console.log(allTasks);
+
   return (
     <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
       <SectionCards />

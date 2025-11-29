@@ -4,9 +4,9 @@ export default function Navbar() {
   return (
     <header className="w-full">
       <div className="w-full h-12 sm:h-14 md:h-16 lg:h-[84px] absolute left-0 top-0 flex justify-center items-center z-20 px-6 sm:px-8 md:px-12 lg:px-0">
-        <div className="w-full h-0 absolute left-0 top-6 sm:top-7 md:top-8 lg:top-[42px] border-t  shadow-[0px_1px_0px_white]"></div>
+        <div className="w-full h-0 absolute left-0 top-6 sm:top-7 md:top-8 lg:top-[42px] border-t border-primary/15"></div>
 
-        <div className="w-full max-w-[calc(100%-62px)] sm:max-w-[calc(100%-48px)] md:max-w-[calc(100%-64px)] lg:max-w-[900px] lg:w-[900px] h-10 sm:h-11 md:h-12 py-1.5 sm:py-2 px-3 sm:px-4 md:px-4 pr-2 sm:pr-3 bg-accent backdrop-blur-sm shadow-[0px_0px_0px_2px_white] overflow-hidden rounded-[50px] flex justify-between items-center relative z-30">
+        <div className="w-full max-w-[calc(100%-62px)] sm:max-w-[calc(100%-48px)] md:max-w-[calc(100%-64px)] lg:max-w-[900px] lg:w-[900px] h-10 sm:h-11 md:h-12 py-1.5 sm:py-2 px-3 sm:px-4 md:px-4 pr-2 sm:pr-3 bg-accent shadow-[0px_0px_0px_1px_#fafafa] dark:shadow-[0px_0px_0px_1px_#fafafa] overflow-hidden rounded-[50px] flex justify-between items-center relative z-30">
           <div className="flex justify-center items-center">
             <div className="flex justify-start items-center">
               <div className="flex flex-col justify-center text-primary text-sm sm:text-base md:text-lg lg:text-xl font-bold tracking-wide font-serif">

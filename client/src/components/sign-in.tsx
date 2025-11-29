@@ -1,4 +1,4 @@
-import { cn, server_api, type UserData } from "@/lib/utils";
+import { server_api, type UserData } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -13,7 +13,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { Spinner } from "./ui/spinner";
-export function SingIn({ className, ...props }: React.ComponentProps<"form">) {
+export function SingIn() {
   const [userData, setUserData] = useState<UserData>({
     email: "",
     password: "",
@@ -63,19 +63,15 @@ export function SingIn({ className, ...props }: React.ComponentProps<"form">) {
 
   // social auth
   const loginWithGoogle = () => {
-    window.location.href = `${server_api}/social-auth/signin?provider=google`;
+    window.location.href = `${server_api}/social-auth/signin/google`;
   };
 
   const loginWithGitHub = () => {
-    window.location.href = `${server_api}/social-auth/signin?provider=github`;
+    window.location.href = `${server_api}/social-auth/signin/github`;
   };
 
   return (
-    <form
-      className={cn("flex flex-col gap-6", className)}
-      {...props}
-      onSubmit={handleForm}
-    >
+    <form onSubmit={handleForm}>
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
           <h1 className="text-2xl font-bold">Login to your account</h1>
@@ -146,6 +142,7 @@ export function SingIn({ className, ...props }: React.ComponentProps<"form">) {
         <Field>
           <div className="flex items-center justify-center gap-1 w-full">
             <Button
+              type="button"
               className="w-1/2"
               variant="outline"
               size="icon"
@@ -154,6 +151,7 @@ export function SingIn({ className, ...props }: React.ComponentProps<"form">) {
               Google
             </Button>
             <Button
+              type="button"
               className="w-1/2"
               variant="outline"
               size="icon"
