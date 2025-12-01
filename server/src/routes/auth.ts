@@ -1,11 +1,13 @@
 import express, { Router } from "express";
 import {
+  deleteAccount,
   forgotPassword,
   signIn,
   signUp,
   updatePassword,
   verifyOtp,
 } from "../controller/auth";
+import { authMiddleware } from "../middleware/auth";
 const authRouter: Router = express.Router();
 
 // sign-up
@@ -18,8 +20,9 @@ authRouter.route("/api/v1/forgot-password").post(forgotPassword);
 authRouter.route("/api/v1/verify-otp").post(verifyOtp);
 // reset-password
 authRouter.route("/api/v1/reset-password").post(updatePassword);
-
-
-
+// delete account
+authRouter
+  .route("/api/v1/delete-account")
+  .delete(authMiddleware, deleteAccount);
 
 export default authRouter;

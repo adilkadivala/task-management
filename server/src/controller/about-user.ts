@@ -19,11 +19,11 @@ const about_me = async (
       email: true,
     });
 
-    const userTeam = await Team.findOne({ members: userId });
+    const userTeam = await Team.find({ members: userId });
 
-    const userRole = await Role.findOne(
+    const userRole = await Role.find(
       {
-        teamId: userTeam?._id,
+        teamId: userTeam,
         userId: userId,
       },
       { userId: true, teamId: true, role: true }
@@ -54,7 +54,7 @@ const about_me = async (
     };
 
     if (!userDetail) {
-      return res.status(401).json({ message: "User doesn't exist" });
+      return res.status(404).json({ message: "profile not found" });
     }
     return res.status(200).json({ message: "user profile", aboutMe });
   } catch (error: any) {
@@ -86,7 +86,7 @@ const about_user = async (
     });
     if (!isUserMemberOftheTeam) {
       return res
-        .status(401)
+        .status(404)
         .json({ message: "User is not member of the team!" });
     }
 
@@ -156,7 +156,7 @@ const assigned_me = async (
     });
 
     if (validTeamTasks.length === 0) {
-      return res.status(200).json({
+      return res.status(201).json({
         message: "You're not assigned to any team tasks",
         assignedTasks: [],
       });
@@ -196,28 +196,28 @@ const handle_role = async (
 
     if (!isMember) {
       return res
-        .status(403)
+        .status(401)
         .json({ message: "User is not a member of this team" });
     }
 
     // 3. Prevent admin modifying themselves
     if (userId === adminId) {
       return res
-        .status(403)
+        .status(402)
         .json({ message: "You cannot change your own role" });
     }
 
     // 4. Prevent altering team creator
     if (userId === team.createdBy.toString()) {
       return res
-        .status(403)
+        .status(400)
         .json({ message: "You cannot modify the team creator's role" });
     }
 
     // 5. Fetch role record
     const role = await Role.findOne({ userId, teamId });
     if (!role) {
-      return res.status(404).json({ message: "Role record not found" });
+      return res.status(403).json({ message: "Role record not found" });
     }
 
     // 6. Prevent removing last admin
@@ -228,7 +228,7 @@ const handle_role = async (
       });
 
       if (adminCount <= 1) {
-        return res.status(403).json({
+        return res.status(405).json({
           message: "Cannot remove the last admin of the team",
         });
       }
@@ -237,7 +237,6 @@ const handle_role = async (
     // 7. Toggle role
     const newRole = role.role === "admin" ? "member" : "admin";
     role.role = newRole;
-    await role.save();
 
     return res.status(200).json({
       message: "User role updated successfully",
@@ -251,5 +250,6 @@ const handle_role = async (
     return next(error);
   }
 };
+
 
 export { about_me, about_user, assigned_me, handle_role };

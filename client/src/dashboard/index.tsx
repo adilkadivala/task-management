@@ -3,22 +3,22 @@ import { ChartCompletionRate } from "@/components/charts/chart-completion";
 import { StatusChart } from "@/components/charts/status-chart";
 import { TasksByStatus } from "@/components/charts/tasks-by-status";
 import { SectionCards } from "@/components/section-cards";
-import { tasksApies } from "@/lib/task";
+import { teamApies } from "@/lib/team";
 import { useEffect, useState } from "react";
 
 const Dashboard = () => {
-  const [allTasks, setAllTasks] = useState();
+  const [allTeams, setAllTeams] = useState();
 
-  const fetchTask = async () => {
-    const data = await tasksApies.soloTaskStats();
-    setAllTasks(data);
+  const fetchTeam = async () => {
+    const data = await teamApies.getAllTeam();
+    setAllTeams(data);
   };
 
   useEffect(() => {
-    fetchTask();
+    fetchTeam();
   }, []);
 
-  console.log(allTasks);
+  console.log(allTeams);
 
   return (
     <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">

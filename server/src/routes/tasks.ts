@@ -17,6 +17,8 @@ import {
   taskStats,
   taskRecents,
   getActivity,
+  deleteAllTasks,
+  deleteAllTaskOfTeam,
 } from "../controller/tasks";
 import { authMiddleware } from "../middleware/auth";
 import { requireAdmin } from "../middleware/role";
@@ -36,10 +38,15 @@ taskRouter
 // update task
 taskRouter.route("/api/v1/update-task/:taskId").put(authMiddleware, updateTask);
 
-// delete task
+// delete a specific task
 taskRouter
   .route("/api/v1/delete-task/:taskId")
   .delete(authMiddleware, deleteTask);
+
+// delete all task
+taskRouter
+  .route("/api/v1/delete-all-tasks")
+  .delete(authMiddleware, deleteAllTasks);
 
 // filter task
 taskRouter
@@ -59,22 +66,27 @@ taskRouter
 // get all tasks
 taskRouter
   .route("/api/v1/get-all-task-of-team/:teamId")
-  .get(authMiddleware, requireAdmin, getTasksOfTeam);
+  .get(authMiddleware, getTasksOfTeam);
 
 // get a specific task
 taskRouter
   .route("/api/v1/get-specific-task-of-team/:teamId/:taskId")
-  .get(authMiddleware, requireAdmin, getSpecificTaskOfTeam);
+  .get(authMiddleware, getSpecificTaskOfTeam);
 
 // update a task of team
 taskRouter
   .route("/api/v1/update-task-of-team/:teamId/:taskId")
   .put(authMiddleware, requireAdmin, updateTaskOfTeam);
 
-// delete a task of team
+// delete a specific task of team
 taskRouter
   .route("/api/v1/delete-task-of-team/:teamId/:taskId")
   .delete(authMiddleware, requireAdmin, deleteTaskOfTeam);
+
+// delete all tasks of team
+taskRouter
+  .route("/api/v1/delete-all-task-of-team/:teamId")
+  .delete(authMiddleware, requireAdmin, deleteAllTaskOfTeam);
 
 // assign a task
 taskRouter

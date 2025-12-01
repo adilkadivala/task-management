@@ -21,7 +21,7 @@ aboutUserRouter
 // assigned me tasks
 aboutUserRouter.route("/api/v1/assigned-me").get(authMiddleware, assigned_me);
 
-// handle user role
+// handle user role (admin)
 aboutUserRouter
   .route("/api/v1/handle-role/:teamId/:userId")
   .put(authMiddleware, requireAdmin, handle_role);

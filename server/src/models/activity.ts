@@ -5,8 +5,8 @@ const ObjectId = Schema.Types.ObjectId;
 
 const activitySchema = new Schema(
   {
-    taskId: { type: ObjectId, ref: "Task", required: true },
-    userId: { type: ObjectId, ref: "User", required: true },
+    taskId: [{ type: ObjectId, ref: "Task", required: true }],
+    userId: [{ type: ObjectId, ref: "User", required: true }],
     action: {
       type: String,
       enum: [

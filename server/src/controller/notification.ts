@@ -18,7 +18,7 @@ const getAllNotification = async (
       .sort({ createdAt: -1 });
 
     if (!allNotifications.length) {
-      return res.status(200).json({
+      return res.status(201).json({
         message: "No notifications yet",
       });
     }
@@ -52,7 +52,7 @@ const getAllUnreadNotification = async (
       .sort({ createdAt: -1 });
 
     if (!allUnreadNotifications.length) {
-      return res.status(200).json({
+      return res.status(201).json({
         message: "No any unread notifications yet",
       });
     }
@@ -84,7 +84,7 @@ const makeReadOneNotification = async (
     });
 
     if (!getUnreadComment) {
-      return res.status(200).json({
+      return res.status(201).json({
         message: "No any unread notifications yet",
       });
     }

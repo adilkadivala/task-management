@@ -12,6 +12,11 @@ import incrypt from "bcryptjs";
 import { check, generate } from "../services/otp";
 import { sendOtpMail } from "../services/mail";
 import { Otp } from "../models/otp";
+import { Comment } from "../models/comments";
+import { Notification } from "../models/notification";
+import { Team } from "../models/team";
+import { Task } from "../models/tasks";
+import { Activity } from "../models/activity";
 
 const AUTH_SECRET = process.env.AUTH_SECRET!;
 const BCRYPT_SALT = process.env.BCRYPT_SALT!;
@@ -84,7 +89,9 @@ const signIn = async (
     const verifyPass = await incrypt.compare(password, isUserExist.password);
 
     if (verifyPass) {
-      const token = jwt.sign({ id: isUserExist._id.toString() }, AUTH_SECRET);
+      const token = jwt.sign({ id: isUserExist._id.toString() }, AUTH_SECRET, {
+        expiresIn: "7d",
+      });
       return res
         .status(200)
         .json({ message: "logged in successfully!!", token });
@@ -104,8 +111,6 @@ const forgotPassword = async (
   try {
     const { email } = req.body;
 
-    console.log(email);
-
     const { success } = fogotPasswordSchema.safeParse(req.body);
     if (!success) {
       return res.status(422).json({
@@ -118,7 +123,7 @@ const forgotPassword = async (
     });
 
     if (!isUserExist) {
-      return res.status(401).json({ message: "User doesn't exist" });
+      return res.status(404).json({ message: "User doesn't exist" });
     }
 
     const otp = await generate(email);
@@ -196,4 +201,44 @@ const updatePassword = async (
   }
 };
 
-export { signUp, signIn, forgotPassword, verifyOtp, updatePassword };
+// delete account with cascade
+const deleteAccount = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | void> => {
+  try {
+    // @ts-ignore
+    const userId = req.userId;
+
+    await Comment.deleteMany({ userId });
+    await Notification.deleteMany({ userId });
+    await Notification.deleteMany({ from: userId });
+    await Team.updateMany({ members: userId }, { $pull: { members: userId } });
+    await Team.deleteMany({ createdBy: userId });
+    await Task.deleteMany({ createdBy: userId });
+    await Task.updateMany(
+      { assignedTo: userId },
+      { $set: { assignedTo: null } }
+    );
+
+    await Activity.deleteMany({ userId });
+
+    await User.deleteOne({ _id: userId });
+
+    return res.status(200).json({
+      message: "Account and all associated data deleted successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export {
+  signUp,
+  signIn,
+  forgotPassword,
+  verifyOtp,
+  updatePassword,
+  deleteAccount,
+};

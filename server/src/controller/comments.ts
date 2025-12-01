@@ -24,7 +24,7 @@ const getComments = async (
       .lean();
 
     if (!comments.length) {
-      return res.status(200).json({ message: "you have not any comments yet" });
+      return res.status(201).json({ message: "you have not any comments yet" });
     }
 
     return res
@@ -57,7 +57,7 @@ const createComment = async (
       return res.status(404).json({ message: "task not exist!" });
     }
     if (isTaskExist.teamId === null) {
-      return res.status(404).json({ message: "task has no any team!" });
+      return res.status(400).json({ message: "task has no any team!" });
     }
 
     const isUserInTheTeam = await Team.findOne({
@@ -67,7 +67,7 @@ const createComment = async (
 
     if (!isUserInTheTeam) {
       return res
-        .status(404)
+        .status(401)
         .json({ message: "user not a member of the team!" });
     }
 
@@ -106,20 +106,20 @@ const deleteComment = async (
     const isTaskExist = await Task.findById(taskId);
 
     if (!isTaskExist) {
-      return res.status(404).json({ message: "task not exist!" });
+      return res.status(400).json({ message: "task not exist!" });
     }
 
     // checking whether comment exist or not
     const isCommentExist = await Comment.findById(commentId);
 
     if (!isCommentExist) {
-      return res.status(404).json({ message: "comment not exist!" });
+      return res.status(401).json({ message: "comment not exist!" });
     }
 
     // checking comment belongs to task or not
     if (isCommentExist?.taskId.toString() !== taskId) {
       return res
-        .status(404)
+        .status(402)
         .json({ message: "comment does not belong to this task!" });
     }
 

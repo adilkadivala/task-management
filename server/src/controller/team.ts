@@ -4,6 +4,10 @@ import { Team } from "../models/team";
 import { Role } from "../models/role";
 import { User } from "../models/user";
 import mongoose from "mongoose";
+import { Comment } from "../models/comments";
+import { Notification } from "../models/notification";
+import { Activity } from "../models/activity";
+import { Task } from "../models/tasks";
 
 // create
 const createTeam = async (
@@ -15,10 +19,6 @@ const createTeam = async (
     const { name, description, members, tasks } = req.body;
     // @ts-ignore
     const userId = req.userId;
-
-    if (!userId) {
-      return res.status(401).json({ message: "account not found" });
-    }
 
     const { success } = teamSchema.safeParse(req.body);
     if (!success) {
@@ -42,22 +42,20 @@ const createTeam = async (
       tasks: tasks || [],
     });
 
-    await team.save();
+    await Role.create({
+      userId,
+      teamId: team._id,
+      role: "admin",
+    });
 
-    // creating a role
-    try {
-      const role = await Role.create({
-        userId,
-        teamId: team._id,
-        role: "admin",
-      });
-      await role.save();
-    } catch (roleError) {
-      console.error("Role creation failed:", roleError);
-    }
+    await Activity.create({
+      userId,
+      teamId: team._id,
+      action: "TEAM_CREATED",
+      details: `Team "${name}" was created`,
+    });
 
-    return res.status(201).json({
-      success: true,
+    return res.status(200).json({
       message: "Team created successfully",
       data: team,
     });
@@ -75,12 +73,9 @@ const getAllTeams = async (
   try {
     // @ts-ignore
     const userId = req.userId;
-    if (!userId) {
-      return res.status(401).json({ message: "account not found" });
-    }
 
     const teams = await Team.find(
-      { createdBy: userId },
+      { members: { $in: { userId } } },
       {
         name: true,
         description: true,
@@ -106,7 +101,7 @@ const getAllTeams = async (
   }
 };
 
-// get  a specific team
+// get a specific team
 const getSpecificTeam = async (
   req: Request,
   res: Response,
@@ -117,11 +112,10 @@ const getSpecificTeam = async (
     const userId = req.userId;
     const { teamId } = req.params;
 
-    if (!userId) {
-      return res.status(401).json({ message: "account not found" });
-    }
-
-    const team = await Team.findById(teamId)
+    const team = await Team.findOne({
+      _id: teamId,
+      members: { $in: { userId } },
+    })
       .select("name description members createdBy tasks")
       .populate("createdBy", "name email")
       .populate("members", "name email")
@@ -159,9 +153,6 @@ const updateTeam = async (
       });
     }
 
-    if (!userId) {
-      return res.status(401).json({ message: "account not found" });
-    }
     if (!teamId) {
       return res.status(401).json({ message: "team id not provided" });
     }
@@ -174,11 +165,17 @@ const updateTeam = async (
 
     if (isTeamExist.createdBy.toString() !== userId) {
       return res
-        .status(401)
+        .status(402)
         .json({ message: "not authorised to modify this team" });
     }
     const updatedTeam = await Team.findByIdAndUpdate(teamId, body, {
       new: true,
+    });
+    await Activity.create({
+      userId,
+      teamId,
+      action: "TEAM_UPDATED",
+      details: `Team "${updatedTeam?.name}" was updated`,
     });
     return res
       .status(200)
@@ -198,9 +195,7 @@ const deleteTeam = async (
     const { teamId } = req.params;
     // @ts-ignore
     const userId = req.userId;
-    if (!userId) {
-      return res.status(404).json({ message: "account not found" });
-    }
+
     if (!teamId) {
       return res.status(402).json({ message: "Params not provided" });
     }
@@ -217,7 +212,23 @@ const deleteTeam = async (
         .json({ message: "Not authorised to delete this team" });
     }
 
+    // cascade
+    const teamTaskIds = isTeamExist.tasks || [];
+    if (teamTaskIds.length > 0) {
+      await Comment.deleteMany({ taskId: { $in: teamTaskIds } });
+      await Notification.deleteMany({ taskId: { $in: teamTaskIds } });
+      await Activity.deleteMany({ taskId: { $in: teamTaskIds } });
+      await Task.deleteMany({ _id: { $in: teamTaskIds } });
+    }
+
     await Team.findByIdAndDelete(teamId);
+
+    await Activity.create({
+      userId,
+      teamId,
+      action: "TEAM_DELETED",
+      details: `Team "${isTeamExist.name}" was deleted`,
+    });
     return res.status(200).json({ message: "team deleted successfully" });
   } catch (error) {
     next(error);
@@ -234,9 +245,6 @@ const addMember = async (
     const { teamId, memberId } = req.params;
     // @ts-ignore
     const userId = req.userId;
-    if (!userId) {
-      return res.status(404).json({ message: "account not found" });
-    }
 
     if (memberId === userId) {
       return res
@@ -251,7 +259,7 @@ const addMember = async (
 
     const team = await Team.findById(teamId);
     if (!team) {
-      return res.status(401).json({ message: "team not found" });
+      return res.status(404).json({ message: "team not found" });
     }
 
     const alReadyMember = new mongoose.Types.ObjectId(memberId);
@@ -269,6 +277,13 @@ const addMember = async (
     )
       .populate("members", "name email")
       .lean();
+
+    await Activity.create({
+      userId,
+      teamId,
+      action: "MEMBER_ADDED",
+      details: `Member "${isMemberExist.name}" was added to team "${team.name}"`,
+    });
     return res.status(200).json({ message: "Member added successfully" });
   } catch (error) {
     next(error);
@@ -286,16 +301,12 @@ const getMembers = async (
     // @ts-ignore
     const userId = req.userId;
 
-    if (!userId) {
-      return res.status(404).json({ message: "account not found" });
-    }
-
-    const team = await Team.findById(teamId).populate(
-      "members",
-      "name email role"
-    );
+    const team = await Team.findOne({
+      _id: teamId,
+      createdBy: userId,
+    }).populate("members", "name email role");
     if (!team) {
-      return res.status(401).json({ message: "team not found" });
+      return res.status(404).json({ message: "team not found" });
     }
     return res.status(200).json({
       message: "Team members fetched successfully",
@@ -317,10 +328,6 @@ const removeMember = async (
     // @ts-ignore
     const userId = req.userId;
 
-    if (!userId) {
-      return res.status(404).json({ message: "account not found" });
-    }
-
     const team = await Team.findById(teamId);
     if (!team) {
       return res.status(401).json({ message: "team not found" });
@@ -337,6 +344,8 @@ const removeMember = async (
       return res.status(404).json({ message: "Member not found in team" });
     }
 
+    const removedUser = await User.findById(memberId);
+
     await Team.findByIdAndUpdate(
       teamId,
       { $pull: { members: memberId } },
@@ -344,6 +353,13 @@ const removeMember = async (
     );
 
     await Role.deleteOne({ userId: memberId, teamId });
+
+    await Activity.create({
+      userId,
+      teamId,
+      action: "MEMBER_REMOVED",
+      details: `Member "${removedUser?.name}" was removed from team "${team.name}"`,
+    });
 
     return res.status(200).json({
       message: "Team member removed successfully",

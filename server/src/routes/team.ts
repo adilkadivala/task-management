@@ -31,13 +31,13 @@ teamRouter
 teamRouter
   .route("/api/v1/add-member/:teamId/:memberId")
   .post(authMiddleware, requireAdmin, addMember);
-// get member
-teamRouter
-  .route("/api/v1/get-members/:teamId")
-  .get(authMiddleware, requireAdmin, getMembers);
 // remove member
 teamRouter
   .route("/api/v1/remove-member/:teamId/:memberId")
   .delete(authMiddleware, requireAdmin, removeMember);
+// get member
+teamRouter
+  .route("/api/v1/get-members/:teamId")
+  .get(authMiddleware, requireAdmin, getMembers);
 
 export default teamRouter;

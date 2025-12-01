@@ -1,15 +1,8 @@
-// DELETE  /api/v1/notifications                 → delete all (optional)
-
-// WebSocket:
-
-// Event: "notification"
-// Event: "receive-message"dxwsqa
-
 import express, { Router } from "express";
 import { authMiddleware } from "../middleware/auth";
 import {
-    deleteAllNotifications,
-    deleteOneNotification,
+  deleteAllNotifications,
+  deleteOneNotification,
   getAllNotification,
   getAllUnreadNotification,
   makeReadAllNotifications,
@@ -42,7 +35,6 @@ notificationRouter
 notificationRouter
   .route("/api/v1/delet-notification/:notificationId")
   .delete(authMiddleware, deleteOneNotification);
-
 
 // DELETE  /api/v1/notifications/:id             → delete all
 notificationRouter

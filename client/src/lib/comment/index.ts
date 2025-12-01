@@ -1,19 +1,22 @@
 import axios from "axios";
 
-class User {
+class Comment {
   private server_api = import.meta.env.VITE_SERVER_ROOT_API;
   private token =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MWZmNWZjZDhkMjQyNTQ0NGNkOGRmOCIsImlhdCI6MTc2NDQxNjY4M30.TZz6v7I6DGzBIGVZ3tze_RPzA9yfmiRd7NV0U9VbiJY";
 
-  // about me
-  async aboutMe() {
+  // get comment
+  async getComment(taskId: any) {
     try {
       const response = await axios.get(
-        `${this.server_api}/about_user/api/v1/about-me`,
+        `${this.server_api}/comment/api/v1/get-comments/${taskId}`,
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
       if (response.status === 404) {
         return response;
+      }
+      if (response.status === 201) {
+        return response.data;
       }
       if (response.status === 200) {
         return response.data;
@@ -22,36 +25,25 @@ class User {
       console.log(error);
     }
   }
-  // about a team memeber (only admin)
-  async aboutATeamMember(teamId: any, userId: any) {
+
+  // create comments
+  async createComment(taskId: any, commentBody: any) {
     try {
-      const response = await axios.get(
-        `${this.server_api}/about_user/api/v1/about-user/${teamId}/${userId}`,
+      const response = await axios.post(
+        `${this.server_api}/comment/api/v1/create-comment/${taskId}`,
+        { ...commentBody },
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
       if (response.status === 404) {
+        return response;
+      }
+      if (response.status === 400) {
         return response;
       }
       if (response.status === 401) {
         return response;
       }
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  //   assigned me
-  async tasksAssignedMe() {
-    try {
-      const response = await axios.get(
-        `${this.server_api}/about_user/api/v1/assigned-me`,
-        { headers: { Authorization: `Bearer ${this.token}` } }
-      );
-
-      if (response.status === 201) {
+      if (response.status === 422) {
         return response;
       }
       if (response.status === 200) {
@@ -62,14 +54,16 @@ class User {
     }
   }
 
-  //   handle user role
-  async handleUserRole(teamId: any, memberId: any) {
+  //delete comment
+  async deleteComment(taskId: any, commentId: any) {
     try {
-      const response = await axios.put(
-        `${this.server_api}/about_user/api/v1/handle-role/${teamId}/${memberId}`,
+      const response = await axios.delete(
+        `${this.server_api}/comment/api/v1/delete-comment/${taskId}/${commentId}/`,
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
-
+      if (response.status === 404) {
+        return response;
+      }
       if (response.status === 400) {
         return response;
       }
@@ -82,12 +76,6 @@ class User {
       if (response.status === 403) {
         return response;
       }
-      if (response.status === 404) {
-        return response;
-      }
-      if (response.status === 405) {
-        return response;
-      }
       if (response.status === 200) {
         return response.data;
       }
@@ -97,4 +85,4 @@ class User {
   }
 }
 
-export const aboutUserApies = new User();
+export const comemntApies = new Comment();
