@@ -10,16 +10,46 @@ import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { OTPForm } from "./otp-form";
 import { useState } from "react";
+import { authApies } from "@/lib/auth";
 
 export function ForgotPasswordForm() {
   const [otpForm, setOtpForm] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
+
+  const sendOtp = async (e: any) => {
+    e.preventDefault();
+
+    setOtpForm(true);
+    setError(null);
+
+    const response = await authApies.ForgotPassword(email);
+    if (response.status === 200) {
+      setOtpForm(true);
+      setError(null);
+      setEmail("");
+    }
+    if (response.status === 422) {
+      setOtpForm(false);
+      setError(response.message);
+    }
+    if (response.status === 404) {
+      setOtpForm(false);
+      setError(response.message);
+    }
+    if (response.status === 401) {
+      setOtpForm(false);
+      setError(response.message);
+    }
+  };
+
   return (
     <form>
       <FieldGroup>
         {otpForm === true ? (
           <>
             <Field>
-              <OTPForm />
+              <OTPForm email={email} />
             </Field>
           </>
         ) : (
@@ -34,13 +64,16 @@ export function ForgotPasswordForm() {
               <FieldLabel htmlFor="email">Email</FieldLabel>
               <Input
                 id="email"
+                name="email"
                 type="text"
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="m@example.com"
                 required
               />
+              {error && <span className="text-sm text-red-300">{error}</span>}
             </Field>
             <Field>
-              <Button type="submit" onClick={() => setOtpForm(true)}>
+              <Button type="submit" onClick={sendOtp}>
                 Send
               </Button>
             </Field>

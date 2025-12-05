@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useEffect } from "react";
 
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
@@ -13,9 +13,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, ListChecks, Users, Workflow } from "lucide-react";
+import { Activity, LayoutDashboard, ListChecks, Users, Workflow } from "lucide-react";
 import { Link } from "react-router-dom";
 import { TeamSwitcher } from "./team-switcher";
+import { aboutUserApies } from "@/lib/user";
+import { useAboutMeStore } from "@/store/about-me";
 
 const data = {
   // teams
@@ -38,13 +40,6 @@ const data = {
     // },
   ],
 
-  // footer
-  user: {
-    name: "Adil",
-    email: "adil@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-
   // main
   navMain: [
     {
@@ -62,10 +57,43 @@ const data = {
       url: "/dashboard/teams",
       icon: Users,
     },
+    {
+      title: "Activity",
+      url: "/dashboard/activity",
+      icon: Activity,
+    },
   ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { setMyInfo } = useAboutMeStore();
+  const { name, email } = useAboutMeStore();
+
+  const aboutMe = async () => {
+    const result = await aboutUserApies.aboutMe();
+
+    if (result.ok) {
+      const detail = result.data.aboutMe.detail;
+
+      console.log(detail);
+
+      const payload = {
+        id: detail._id,
+        name: detail.name,
+        email: detail.email,
+        role: result.data.aboutMe.role,
+        teams: result.data.aboutMe.teams,
+        soloTasks: result.data.aboutMe.soloTasks,
+        assignedTasks: result.data.aboutMe.assignedTasks,
+      };
+      setMyInfo(payload);
+    }
+  };
+
+  useEffect(() => {
+    aboutMe();
+  }, []);
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -85,7 +113,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={{ name: name ?? "", email: email ?? "" }} />
       </SidebarFooter>
     </Sidebar>
   );

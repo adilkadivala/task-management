@@ -11,8 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
-import axios from "axios";
 import { toast } from "sonner";
+import { authApies } from "@/lib/auth";
 
 export function SingUp() {
   const [userData, setUserData] = useState<UserData>({
@@ -28,37 +28,23 @@ export function SingUp() {
   // form submittion
   const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      setIsLoading(true);
-      const response = await axios.post(`${server_api}/auth/api/v1/sign-up`, {
-        ...userData,
-      });
+    setIsLoading(true);
 
-      if (response.status === 200) {
-        toast.success(response.data.message);
-        setUserData({
-          name: "",
-          email: "",
-          password: "",
-        });
-      }
-    } catch (error: any) {
-      const status = error.response?.status;
-      const message = error.response?.data?.message || "Something went wrong";
+    const response = await authApies.SignUp(userData);
 
-      if (status === 401) {
-        toast.error(message);
-        setUserStatus(message);
-      } else if (status === 422) {
-        setError("Required");
-      }
-    } finally {
-      setTimeout(() => {
-        setError(null);
-        setUserStatus(null);
-      }, 1000);
-      setIsLoading(false);
+    if (response.ok) {
+      toast.success(response.data.message);
+      setUserData({ name: "", email: "", password: "" });
+    } else {
+      if (response.status === 422) setError(response.message);
+      if (response.status === 401) setUserStatus(response.message);
     }
+
+    setIsLoading(false);
+
+    setTimeout(() => {
+      setError(null);
+    }, 1000);
   };
 
   // social auth

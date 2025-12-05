@@ -6,24 +6,45 @@ import Dashboard from "@/dashboard";
 import DashLayout from "@/dashboard/dash-layout";
 import TaskManagement from "@/dashboard/task-management";
 import LandingPage from "@/pages/landing-page";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { useAuthStore } from "@/store/auth-store";
+import Teams from "@/dashboard/teams";
+import Activity from "@/dashboard/activity";
+import Profile from "@/dashboard/profile";
+import Notifications from "@/dashboard/notification";
+import AboutTeam from "@/components/dashboard/team/about-team";
+import AboutTeamTask from "@/components/dashboard/team/about-team-task";
 
 const Paths = () => {
+  const token = useAuthStore((state) => state.token);
+
+  if (!token) {
+    return (
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+
+        <Route path="/auth" element={<AuthLayout />}>
+          <Route path="sign-in" element={<SignIn />} />
+          <Route path="sign-up" element={<SignUp />} />
+          <Route path="forgot-password" element={<ForgotPassword />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    );
+  }
   return (
     <Routes>
-      <Route path="/" element={<LandingPage />} />
-
-      <Route path="/auth" element={<AuthLayout />}>
-        <Route path="sign-in" element={<SignIn />} />
-        <Route path="sign-up" element={<SignUp />} />
-        <Route path="forgot-password" element={<ForgotPassword />} />
-      </Route>
-
       <Route path="/dashboard" element={<DashLayout />}>
         <Route index element={<Dashboard />} />
         <Route path="task-management" element={<TaskManagement />} />
-        <Route path="teams" element={<Dashboard />} />
+        <Route path="teams" element={<Teams />} />
+        <Route path="teams/:teamId" element={<AboutTeam />} />
+        <Route path="teams/:teamId/tasks/:taskId" element={<AboutTeamTask />} />
+        <Route path="activity" element={<Activity />} />
+        <Route path="profile" element={<Profile />} />
+        <Route path="notification" element={<Notifications />} />
       </Route>
+      <Route path="*" element={<Navigate to="/dashboard" />} />
     </Routes>
   );
 };

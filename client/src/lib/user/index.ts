@@ -1,25 +1,28 @@
+import { useAuthStore } from "@/store/auth-store";
 import axios from "axios";
 
 class User {
   private server_api = import.meta.env.VITE_SERVER_ROOT_API;
-  private token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MWZmNWZjZDhkMjQyNTQ0NGNkOGRmOCIsImlhdCI6MTc2NDQxNjY4M30.TZz6v7I6DGzBIGVZ3tze_RPzA9yfmiRd7NV0U9VbiJY";
+
+  // always get latest token
+  private get token() {
+    return useAuthStore.getState().token;
+  }
 
   // about me
   async aboutMe() {
+    console.log(this.token);
     try {
       const response = await axios.get(
         `${this.server_api}/about_user/api/v1/about-me`,
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
-      if (response.status === 404) {
-        return response;
-      }
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   // about a team memeber (only admin)

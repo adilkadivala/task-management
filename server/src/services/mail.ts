@@ -23,6 +23,6 @@ export const sendOtpMail = async (email: string, otp: string) => {
       html: otpTemplate(otp),
     });
   } catch (error) {
-    return { message: "❌ Mail transporter failed to initialize" };
+    return { message: " Mail transporter failed to initialize" };
   }
 };

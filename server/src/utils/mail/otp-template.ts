@@ -62,7 +62,7 @@ export function otpTemplate(otp: string): string {
       <h1>Verification Code</h1>
       <p>Use the OTP below to verify your identity. It's valid for 5 minutes.</p>
       <div class="otp">${otp}</div>
-      <p class="note">⚠️ Do not share this code with anyone.</p>
+      <p class="note">Do not share this code with anyone.</p>
       <div class="footer">
         <p>© ${new Date().getFullYear()} Task-flow. All rights reserved.</p>
       </div>

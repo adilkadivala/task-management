@@ -32,8 +32,8 @@ export default function LandingPage() {
               <BentoOfTaskFlow />
               <DocumentationSection />
               <Testimonials />
-              <PricingSection />
               <FAQSection />
+              <PricingSection />
               <CallToAction />
               <Footer />
             </div>

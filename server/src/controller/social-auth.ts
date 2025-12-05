@@ -21,8 +21,7 @@ export const socialLoginController = async ({ user, account }: any) => {
 
   const token = jwt.sign(
     {
-      id: existing._id,
-      email: existing.email,
+      id: existing._id.toString(),
     },
     AUTH_SECRET,
     { expiresIn: "7d" }

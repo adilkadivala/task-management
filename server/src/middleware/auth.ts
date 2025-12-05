@@ -12,7 +12,9 @@ const authMiddleware = async (
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    res.status(403).json({ message: "Unauthorized header! Please create account" });
+    res
+      .status(403)
+      .json({ message: "Unauthorized header! Please create account" });
     return;
   }
 
@@ -27,7 +29,7 @@ const authMiddleware = async (
     const decoded = jwt.verify(token, AUTH_SECRET);
 
     if (decoded) {
-    // @ts-ignore
+      // @ts-ignore
       req.userId = decoded.id;
       next();
       return;

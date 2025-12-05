@@ -1,117 +1,96 @@
 import axios from "axios";
+import type { UserData } from "../utils";
 
 class Auth {
   private server_api = import.meta.env.VITE_SERVER_ROOT_API;
 
   // sign-in
-  async SignIn(userDetail: any) {
+  async SignIn(userDetail: UserData) {
     try {
       const response = await axios.post(
         `${this.server_api}/auth/api/v1/sign-in`,
         { ...userDetail }
       );
-
-      if (response.status === 422) {
-        return response;
-      }
-      if (response.status === 401) {
-        return response;
-      }
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (error) {
+      localStorage.setItem("token", response.data.token);
+      return { ok: true, data: response.data, token: response.data.token };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   // sign-up
-  async SignUp(userDetail: any) {
+  async SignUp(userDetail: UserData) {
     try {
       const response = await axios.post(
         `${this.server_api}/auth/api/v1/sign-up`,
         { ...userDetail }
       );
-
-      if (response.status === 422) {
-        return response;
-      }
-      if (response.status === 401) {
-        return response;
-      }
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   // forgot-password
-  async ForgotPassword(userDetail: any) {
+  async ForgotPassword(email: string) {
     try {
       const response = await axios.post(
         `${this.server_api}/auth/api/v1/forgot-password`,
-        { ...userDetail }
+        { email }
       );
 
-      if (response.status === 422) {
-        return response;
-      }
-      if (response.status === 401) {
-        return response;
-      }
-      if (response.status === 404) {
-        return response;
-      }
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   // reset-password
-  async VarifyOtp(userDetail: any) {
+  async VarifyOtp(email: string, otp: string) {
     try {
-      const response = await axios.post(
-        `${this.server_api}/auth/api/v1/verify-otp`,
-        { ...userDetail }
-      );
+      await axios.post(`${this.server_api}/auth/api/v1/verify-otp`, {
+        email,
+        otp,
+      });
 
-      if (response.status === 400) {
-        return response;
-      }
-      if (response.status === 401) {
-        return response;
-      }
-      if (response.status === 410) {
-        return response;
-      }
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (error) {
+      return {
+        ok: true,
+        data: {
+          message: "OTP verified!",
+        },
+      };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   // reset-password
-  async ResetPassword(userDetail: any) {
+  async ResetPassword(email: string, password: string) {
     try {
       const response = await axios.post(
         `${this.server_api}/auth/api/v1/reset-password`,
-        { ...userDetail }
+        { email, password }
       );
-
-      if (response.status === 422) {
-        return response;
-      }
-      if (response.status === 400) {
-        return response;
-      }
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (error) {
+      console.log(response.data);
+      return {
+        ok: true,
+        data: {
+          message: "OTP verified!",
+        },
+      };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   //   delete account

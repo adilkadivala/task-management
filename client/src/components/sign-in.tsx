@@ -8,11 +8,13 @@ import {
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
-import React, { useState } from "react";
-import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Spinner } from "./ui/spinner";
+import { authApies } from "@/lib/auth";
+import { useAuthStore } from "@/store/auth-store";
+
 export function SingIn() {
   const [userData, setUserData] = useState<UserData>({
     email: "",
@@ -24,41 +26,34 @@ export function SingIn() {
   const [userStatus, setUserStatus] = useState<string | null>(null);
   const [credentialStatus, setCredentialStatus] = useState<string | null>(null);
 
-  // handle form
+  const navigate = useNavigate();
+
+  const setAuth = useAuthStore((state) => state.setAuth);
+
+  // handle login form
   const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      setIsLoading(true);
-      const response = await axios.post(`${server_api}/auth/api/v1/sign-in`, {
-        ...userData,
-      });
+    setIsLoading(true);
 
-      if (response.status === 200) {
-        toast.success(response.data.message);
-        localStorage.setItem("token", response.data.token);
-        setUserData({
-          email: "",
-          password: "",
-        });
-      }
-    } catch (error: any) {
-      const status = error.response?.status;
-      const message = error.response?.data?.message || "Something went wrong";
+    const result = await authApies.SignIn(userData);
 
-      if (status === 422) {
-        setError(message);
-      } else if (status === 401) {
-        setUserStatus(message);
-      } else if (status === 403) {
-        setCredentialStatus(message);
-      }
-    } finally {
-      setIsLoading(false);
-      setTimeout(() => {
-        setError(null);
-        setCredentialStatus(null);
-      }, 1000);
+    if (result.ok) {
+      toast.success(result.data.message);
+      setAuth(result.data.token);
+      navigate("/dashboard");
+      setUserData({ email: "", password: "" });
+    } else {
+      if (result.status === 422) setError(result.message);
+      if (result.status === 401) setUserStatus(result.message);
+      if (result.status === 403) setCredentialStatus(result.message);
     }
+
+    setIsLoading(false);
+
+    setTimeout(() => {
+      setError(null);
+      setCredentialStatus(null);
+    }, 1000);
   };
 
   // social auth

@@ -11,8 +11,6 @@ import { socialLoginController } from "../controller/social-auth";
 
 const socialAuthRouter = Router();
 
-/* --------------------------  SESSION MIDDLEWARE -------------------------- */
-// Needed for passport
 socialAuthRouter.use(
   session({
     secret: process.env.AUTH_SECRET!,
@@ -24,7 +22,6 @@ socialAuthRouter.use(
 socialAuthRouter.use(passport.initialize());
 socialAuthRouter.use(passport.session());
 
-/* ----------------------------- SERIALIZER -------------------------------- */
 passport.serializeUser((user, done) => {
   done(null, user);
 });
@@ -33,7 +30,6 @@ passport.deserializeUser((obj: any, done) => {
   done(null, obj);
 });
 
-/* --------------------------- GOOGLE STRATEGY ----------------------------- */
 passport.use(
   new GoogleStrategy(
     {
@@ -42,7 +38,7 @@ passport.use(
       callbackURL: process.env.GOOGLE_CALLBACK_URI!,
     },
     async (accessToken, refreshToken, profile, done) => {
-      await socialLoginController({
+      const { token, user } = await socialLoginController({
         user: {
           id: profile.id,
           name: profile.displayName,
@@ -51,12 +47,14 @@ passport.use(
         account: { provider: "google" },
       });
 
-      return done(null, profile);
+      console.log("token", token);
+      console.log("user", user);
+
+      return done(null, { token, user });
     }
   )
 );
 
-/* ---------------------------- GITHUB STRATEGY ----------------------------- */
 passport.use(
   new GitHubStrategy(
     {
@@ -72,7 +70,6 @@ passport.use(
     ) => {
       let email = profile.emails?.[0]?.value;
 
-      // If GitHub did NOT return email, fetch via API
       if (!email) {
         try {
           const { data } = await axios.get(
@@ -97,7 +94,7 @@ passport.use(
         return done(new Error("Unable to get email from GitHub"), null);
       }
 
-      await socialLoginController({
+      const { token, user } = await socialLoginController({
         user: {
           id: profile.id,
           name: profile.username,
@@ -106,12 +103,10 @@ passport.use(
         account: { provider: "github" },
       });
 
-      return done(null, profile);
+      return done(null, { token, user });
     }
   )
 );
-
-/* --------------------------- AUTH ROUTES --------------------------- */
 
 // Google
 socialAuthRouter.get(
@@ -123,7 +118,9 @@ socialAuthRouter.get(
   "/callback/google",
   passport.authenticate("google", { failureRedirect: "/auth/sign-in" }),
   (req, res) => {
-    res.redirect(process.env.CLIENT_URL!);
+    // @ts-ignore
+    const token = req.user?.token;
+    res.redirect(`${process.env.CLIENT_URL}?token=${token}`);
   }
 );
 
@@ -137,7 +134,9 @@ socialAuthRouter.get(
   "/callback/github",
   passport.authenticate("github", { failureRedirect: "/auth/sign-in" }),
   (req, res) => {
-    res.redirect(process.env.CLIENT_URL!);
+    // @ts-ignore
+    const token = req.user?.token;
+    res.redirect(`${process.env.CLIENT_URL}?token=${token}`);
   }
 );
 

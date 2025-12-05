@@ -31,7 +31,7 @@ const Socialproof = () => {
                 key={index}
                 className="group h-28 sm:h-32 md:h-36 flex flex-col sm:flex-row justify-center items-center gap-2 border-l border-r border-b border-primary/10 hover:bg-card transition delay-300"
               >
-                <div className="w-6 h-6 relative rounded-full">
+                <div className="w-6 h-6 rounded-full">
                   <Workflow className="group-hover:rotate-180 duration-300 ease-in-out group-hover:text-primary transition delay-300" />
                 </div>
                 <div className="text-center flex justify-center flex-col text-primary text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl font-medium leading-tight md:leading-9 dark:group-hover:text-secondary transition-all delay-300">
